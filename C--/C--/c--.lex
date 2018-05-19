@@ -33,58 +33,74 @@
     }
 %}
 
+digit [0-9]
+digit_ [1-9]
+letter [a-zA-Z]
+integer ({digit_}{digit}*) | 0
+sfloat (({digit}+\.{digit}*)|({digit}*\.{digit}+))[Ee][+-]?{digit}+
+float {sfloat}|((({digit_}{digit}*)|0)\.{digit}+)
+id {letter_}({letter_}|{digit})*
+relop >|<|>=|<=|==|!=
+comments /\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/
+
 %%
-[ \t]                                  {adjust(); continue;}
-(\n|\r\n)                              {adjust(); EM_newline(); continue;}
-"/*"[^*]*[*]+([^*/][^*]*[*]+)*[*]*"/"  {adjust(); continue;}
-"array"    {adjust(); return ARRAY;}
-"break"    {adjust(); return BREAK;}
-"do"	   {adjust(); return DO;}
-"end"      {adjust(); return END;}
-"else"     {adjust(); return ELSE;}
-"for"  	   {adjust(); return FOR;}
-"function" {adjust(); return FUNCTION;}
-"if"	   {adjust(); return IF;}
-"in"       {adjust(); return IN;}
-"let"	   {adjust(); return LET;}
-"nil"	   {adjust(); return NIL;}
-"of"	   {adjust(); return OF;}
-"then"     {adjust(); return THEN;}
-"to"	   {adjust(); return TO;}
-"type"     {adjust(); return TYPE;}
-"while"    {adjust(); return WHILE;}
-"var"      {adjust(); return VAR;}
-[0-9]+	   {adjust(); yylval.ival=atoi(yytext); return INT;}
-[a-zA-Z][a-zA-Z0-9_]*    {adjust(); yylval.sval=yytext; return ID;}
-"*"        {adjust(); return TIMES;}
-"/"        {adjust(); return DIVIDE;}
-"+"        {adjust(); return PLUS;}
-"-"        {adjust(); return MINUS;}
-"&"	       {adjust(); return AND;}
-"|"	       {adjust(); return OR;}
-","	       {adjust(); return COMMA;}
-"."        {adjust(); return DOT;}
-":"	       {adjust(); return COLON;}
-";"	       {adjust(); return SEMICOLON;}
-"("	       {adjust(); return LPAREN;}
-")"        {adjust(); return RPAREN;}
-"["        {adjust(); return LBRACK;}
-"]"        {adjust(); return RBRACK;}
-"{"        {adjust(); return LBRACE;}
-"}"        {adjust(); return RBRACE;}
-"="        {adjust(); return EQ;}
-"<>"       {adjust(); return NEQ;}
-"<"        {adjust(); return LT;}
-"<="       {adjust(); return LE;}
-">"        {adjust(); return GT;}
-">="       {adjust(); return GE;}
-":="       {adjust(); return ASSIGN;}
-\" {adjust(); BEGIN(STR); setup();}
+[ \t]+   {adjust(); continue;}  //blank
+\n	 {adjust(); EM_newline(); continue;}
+(\n|\r\n)   {adjust(); EM_newline(); continue;}
+comments   {adjust(); continue;}   //comments
+integer	   {adjust(); yylval.ival=atoi(yytext); return INT;}
+float   {adjust(); yylval.sval=yytext; return float;}
+id    {adjust(); yylval.sval=yytext; return ID;}
+
+{integer}   {adjust(); return INT;}
+{float} {adjust(); return FLOAT;}
+"char"  {adjust(); return CAHR;}
+"if"    {adjust(); return IF;}
+"else"  {adjust(); return ELSE;}
+"while" {adjust(); return WHILE;}
+"for"   {adjust(); return FOR;}
+"break" {adjust(); return BREAK;}
+"continue"   {adjust(); return CONTINUE;}
+"struct"    {adjust(); return STRUCT;}
+"return"    {adjust(); return RETURN;}
+"void"  {adjust(); return VOID;}
+"typedef"   {adjust(); return typedef;}
+"const" {adjust(); return CONST;}
+"case"  {adjust(); return CASE;}
+"default"   {adjust(); return DEFAULT;}
+"do"    {adjust(); return DO;}
+"enum"  {adjust(); return ENUM;}
+"extern"    {adjust(); return EXTREN;}
+"goto"  {adjust(); return GOTO;}
+"sizeof"    {adjust(); return SIZROF;}
+"static"    {adjust(); return STATIC;}
+"switch"    {adjust(); return SWITCH;}
+"union" {adjust(); return UNION;}
+"volatile"  {adjust(); return VOLATILE;}
+"double"    {adjust(); return DOUBLE;}
+"long"  {adjust(); return LONG;}
+"short" {adjust(); return SHORT;}
+"signed"    {adjust(); return SIGNED;}
+"unsigned"  {adjust(); return UNSIGNED;}
+
+"," {adjust(); return COMMA;}
+";" {adjust(); return SEMICOLON;}
+"+" {adjust(); return PLUS;}
+"-" {adjust(); return MINUS;}
+"*" {adjust(); return MUL;}
+"/" {adjust(); return DIVIDE;}
+"=" {adjust(); return ASSIGN;}
+"!" {adjust(); return NOT;}
+relop   {adjust(); return REL;}
+"&&"    {adjust(); return AND;}
+"||"    {adjust(); return OR;}
+"." {adjust(); return DOT;}
+"{" {adjust(); return LP}
+"}" {adjust(); return RP;}
+"[" {adjust(); return LB;}
+"]" {adjust(); return RB;}
+"{" {adjust(); return LC;}
+"}" {adjust(); return RC;}
+
 %%
 
-" "	 {adjust(); continue;}
-\n	 {adjust(); EM_newline(); continue;}
-","	 {adjust(); return COMMA;}
-for  	 {adjust(); return FOR;}
-[0-9]+	 {adjust(); yylval.ival=atoi(yytext); return INT;}
-.	 {adjust(); EM_error(EM_tokPos,"illegal token");}

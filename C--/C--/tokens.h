@@ -17,41 +17,67 @@ typedef union  {
 } YYSTYPE;
 extern YYSTYPE yylval;
 
-
+// contain all keywords in C
 # define ID 257 // A character string consisting of 52 upper- or lower-case alphabetic, 10 numeric and one underscore characters. Besides, an identifier must not startwith a digit3
 # define INT 258    // int: A sequence of digits without spaces
 # define FLOAT 259 // float: A real number consisting of digits and one decimal point. The decimal point must be surrounded by at least one digit
-# define COMMA 260  // ,
-# define SEMICOLON 261  // ;
-# define PLUS 262   // +
-# define MINUS 263  // -
-# define TIMES 264  // *
-# define DIVIDE 265 // /
-# define ASSIGN 266 // =
-# define NOT 267    // !
-# define REL 268    // > | < | >= | <= | == | !=
-# define AND 269    // &&
-# define OR 270 // ||
-# define DOT 271    // .
-# define TYPE 272   // int | float
-# define LP 273 // (
-# define RP 274 // )
-# define LB 275 // [
-# define RP 276 // ]
-# define LC 277 // {
-# define RC 278 // }
-# define IF 279 // if
-# define ELSE 280   // else
-# define WHILE 281  // while
-# define FOR 282    // for
-# define BREAK 283  // break
-# define CONTINUE 284   // continue
-# define STRUCT 285 // struct
-# define RETURN 286 // return
-# define VOID 287   // void
+# define char 260   // char: character
+# define COMMA 261  // ,
+# define SEMICOLON 262  // ;
+# define PLUS 263   // +
+# define MINUS 264  // -
+# define MUL 265  // *
+# define DIVIDE 266 // /
+# define ASSIGN 267 // =
+# define NOT 268    // !
+# define REL 269    // > | < | >= | <= | == | !=
+# define AND 270    // &&
+# define OR 271 // ||
+# define DOT 272    // .
+# define TYPE 273   // int | float | char
+# define LP 274 // (
+# define RP 275 // )
+# define LB 276 // [
+# define RB 277 // ]
+# define LC 278 // {
+# define RC 279 // }
+# define IF 280 // if
+# define ELSE 281   // else
+# define WHILE 282  // while
+# define FOR 283    // for
+# define BREAK 284  // break
+# define CONTINUE 285   // continue
+# define STRUCT 286 // struct
+# define RETURN 287 // return
+# define VOID 288   // void
 # define TYPEDEF 289    // typedef
+# define CONST 290  // const
+# define CASE 292   // case
+# define DEFAULT 293    // default
+# define DO 294 // do
+# define ENUM 295   // enum
+# define EXTERN 296 // extern
+# define GOTO 297   // goto
+# define SIZEOF 298 // sizeof
+# define STATIC 299 // static
+# define SWITCH 300 // switch
+# define UNION 301  // union
+# define VOLATILE 302   // volatile
+# define DOUBLE 303 // double
+# define LONG 304   // long
+# define SHORT 305  // short
+# define SIGNED 306 // signed
+# define UNSIGNED 307   // unsigned
 
 #endif /* tokens_h */
+
+
+
+
+
+
+
+
 
 
 
