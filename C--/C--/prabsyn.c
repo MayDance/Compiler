@@ -30,10 +30,11 @@ static void pr_efieldList(FILE *out, A_efieldList v, int d);
 
 static void indent(FILE *out, int d) {
     int i;
-    for (i = 0; i <= d; i++) fprintf(out, " ");
+    for (i = 0; i <= d; i++)
+        fprintf(out, " ");
 }
 
-/* Print A_var types. Indent d spaces. */
+// Print A_var types. Indent d spaces.
 static void pr_var(FILE *out, A_var v, int d) {
     indent(out, d);
     switch (v->kind) {
@@ -45,15 +46,20 @@ static void pr_var(FILE *out, A_var v, int d) {
             pr_var(out, v->u.field.var, d+1); fprintf(out, "%s\n", ",");
             indent(out, d+1); fprintf(out, "%s)", S_name(v->u.field.sym));
             break;
-        case A_subscriptVar:
-            fprintf(out, "%s\n", "subscriptVar(");
-            pr_var(out, v->u.subscript.var, d+1); fprintf(out, "%s\n", ",");
-            pr_exp(out, v->u.subscript.exp, d+1); fprintf(out, "%s", ")");
+        case A_arrayVar:
+            fprintf(out, "%s\n", "arrayVar(");
+            pr_var(out, v->u.array.var, d+1); fprintf(out, "%s\n", ",");
+            pr_exp(out, v->u.array.exp, d+1); fprintf(out, "%s", ")");
+            break;
+        case A_ptrVar:
+            fprintf(out, "%s\n", "ptrVar(");
+            pr_var(out, v->u.ptr.var, d+1); fprintf(out, "%s", ")");
             break;
         default:
             assert(0);
     }
 }
+
 
 static char str_oper[][12] = {
     "PLUS", "MINUS", "TIMES", "DIVIDE",
@@ -63,7 +69,7 @@ static void pr_oper(FILE *out, A_oper d) {
     fprintf(out, "%s", str_oper[d]);
 }
 
-/* Print A_var types. Indent d spaces. */
+// Print A_var types. Indent d spaces.
 void pr_exp(FILE *out, A_exp v, int d) {
     indent(out, d);
     switch (v->kind) {
@@ -77,8 +83,8 @@ void pr_exp(FILE *out, A_exp v, int d) {
         case A_intExp:
             fprintf(out, "intExp(%d)", v->u.intt);
             break;
-//        case A_stringExp:
-//            fprintf(out, "stringExp(%s)", v->u.stringg);
+        case A_floatExp:
+            fprintf(out, "floatExp(%d)", v->u.intt);
             break;
         case A_callExp:
             fprintf(out, "callExp(%s,\n", S_name(v->u.call.func));
@@ -89,14 +95,6 @@ void pr_exp(FILE *out, A_exp v, int d) {
             indent(out, d+1); pr_oper(out, v->u.op.oper); fprintf(out, ",\n");
             pr_exp(out, v->u.op.left, d+1); fprintf(out, ",\n");
             pr_exp(out, v->u.op.right, d+1); fprintf(out, ")");
-            break;
-        case A_recordExp:
-            fprintf(out, "recordExp(%s,\n", S_name(v->u.record.typ));
-            pr_efieldList(out, v->u.record.fields, d+1); fprintf(out, ")");
-            break;
-        case A_seqExp:
-            fprintf(out, "seqExp(\n");
-            pr_expList(out, v->u.seq, d+1); fprintf(out, ")");
             break;
         case A_assignExp:
             fprintf(out, "assignExp(\n");
@@ -128,16 +126,21 @@ void pr_exp(FILE *out, A_exp v, int d) {
         case A_breakExp:
             fprintf(out, "breakExp()");
             break;
-//        case A_letExp:
-//            fprintf(out, "letExp(\n");
-//            pr_decList(out, v->u.let.decs, d+1); fprintf(out, ",\n");
-//            pr_exp(out, v->u.let.body, d+1); fprintf(out, ")");
-//            break;
-//        case A_arrayExp:
-//            fprintf(out, "arrayExp(%s,\n", S_name(v->u.array.typ));
-//            pr_exp(out, v->u.array.size, d+1); fprintf(out, ",\n");
-//            pr_exp(out, v->u.array.init, d+1); fprintf(out, ")");
-//            break;
+        case A_continueExp:
+            fprintf(out, "continueExp()");
+            break;
+        case A_returnExp:
+            fprintf(out, "returnExp(\n");
+            pr_exp(out, v->u.rtn, d+1); fprintf(out, ")");
+            break;
+        case A_seqExp:
+            fprintf(out, "seqExp(\n");
+            pr_expList(out, v->u.seq, d+1); fprintf(out, ")");
+            break;
+        case A_structExp:
+            fprintf(out, "structExp(%s,\n", S_name(v->u.structt.stru));
+            pr_expList(out, v->u.structt.vars, d+1); fprintf(out, ")");
+            break;
         default:
             assert(0);
     }
@@ -147,20 +150,21 @@ static void pr_dec(FILE *out, A_dec v, int d) {
     indent(out, d);
     switch (v->kind) {
         case A_functionDec:
-            fprintf(out, "functionDec(\n");
-            pr_fundecList(out, v->u.function, d+1); fprintf(out, ")");
+            fprintf(out, "functionDec(%s\n", S_name(v->u.funcc.func));
+            pr_expList(out, v->u.funcc.params, d+1); fprintf(out, ",\n");
+            pr_expList(out, v->u.funcc.body, d+1); fprintf(out, ")");
             break;
         case A_varDec:
             fprintf(out, "varDec(%s,\n", S_name(v->u.var.var));
             if (v->u.var.typ) {
                 indent(out, d+1); fprintf(out, "%s,\n", S_name(v->u.var.typ));
             }
-            pr_exp(out, v->u.var.init, d+1); fprintf(out, ",\n");
+//            pr_exp(out, v->u.var.init, d+1); fprintf(out, ",\n");
             indent(out, d+1); fprintf(out, "%s", v->u.var.escape ? "TRUE)" : "FALSE)");
             break;
-        case A_typeDec:
-            fprintf(out, "typeDec(\n");
-            pr_nametyList(out, v->u.type, d+1); fprintf(out, ")");
+        case A_arrayDec:
+            fprintf(out, "arrayDec(%s\n", S_name(v->u.arrayy.arr));
+            indent(out, v->u.arrayy.size); fprintf(out, "%s", v->u.arrayy.escape ? "TRUE)" : "FALSE)");
             break;
         default:
             assert(0);
@@ -169,20 +173,7 @@ static void pr_dec(FILE *out, A_dec v, int d) {
 
 static void pr_ty(FILE *out, A_ty v, int d) {
     indent(out, d);
-    switch (v->kind) {
-        case A_nameTy:
-            fprintf(out, "nameTy(%s)", S_name(v->u.name));
-            break;
-        case A_recordTy:
-            fprintf(out, "recordTy(\n");
-            pr_fieldList(out, v->u.record, d+1); fprintf(out, ")");
-            break;
-        case A_arrayTy:
-            fprintf(out, "arrayTy(%s)", S_name(v->u.array));
-            break;
-        default:
-            assert(0);
-    }
+    fprintf(out, "aTy(%s\n%s)", S_name(v->id), S_name(v->type));
 }
 
 static void pr_field(FILE *out, A_field v, int d) {

@@ -25,3 +25,4 @@ void *TAB_pop(TAB_table t);
 
 // Call "show" on every "key"->"value" pair in the table, including shadowed bindings, in order from the most recent binding of any key to the oldest binding in the table
 void TAB_dump(TAB_table t, void (*show)(void *key, void *value));
+
