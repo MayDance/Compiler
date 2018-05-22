@@ -6,9 +6,5 @@
 //  Copyright © 2018 Starblo Hong. All rights reserved.
 //
 
-#ifndef prabsyn_h
-#define prabsyn_h
-
-#include <stdio.h>
-
-#endif /* prabsyn_h */
+// function prototype from prabsyn.c
+void pr_exp(FILE *out, A_exp v, int d);
