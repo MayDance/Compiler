@@ -6,9 +6,5 @@
 //  Copyright © 2018 Starblo Hong. All rights reserved.
 //
 
-#ifndef parse_h
-#define parse_h
-
-#include <stdio.h>
-
-#endif /* parse_h */
+/* function prototype from parse.c */
+A_exp parse(string fname);
