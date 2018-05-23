@@ -37,7 +37,7 @@ extern YYSTYPE yylval;
 # define LP 273 // (
 # define RP 274 // )
 # define LB 275 // [
-# define RP 276 // ]
+# define RB 276 // ]
 # define LC 277 // {
 # define RC 278 // }
 # define IF 279 // if

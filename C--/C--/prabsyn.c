@@ -13,7 +13,7 @@
 #include "absyn.h"  /* abstract syntax data structures */
 #include "prabsyn.h" /* function prototype */
 
-/* local function prototypes */
+// local function prototypes 
 static void pr_var(FILE *out, A_var v, int d);
 static void pr_dec(FILE *out, A_dec v, int d);
 static void pr_ty(FILE *out, A_ty v, int d);

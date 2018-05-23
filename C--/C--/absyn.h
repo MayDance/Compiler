@@ -176,7 +176,7 @@ struct A_efieldList_ {
 };
 
 
-/* Function Prototypes */
+// Function Prototypes
 A_var A_SimpleVar(A_pos pos, S_symbol sym);
 A_var A_FieldVar(A_pos pos, A_var var, S_symbol sym);
 A_var A_ArrayVar(A_pos pos, A_var var, A_exp exp);
