@@ -191,21 +191,12 @@ A_dec A_ArrayDec(A_pos pos, S_symbol arr, S_symbol type, int size)
 A_ty A_Ty(A_pos pos, S_symbol id, S_symbol type) {
     A_ty p = checked_malloc(sizeof(*p));
     p->pos=pos;
-    p->id=id;
     p->type=type;
     return p;
 }
 
-A_field A_Field(A_pos pos, S_symbol name, S_symbol typ) {
-    A_field p = checked_malloc(sizeof(*p));
-    p->pos=pos;
-    p->name=name;
-    p->typ=typ;
-    p->escape=TRUE;
-    return p;
-}
-A_fieldList A_FieldList(A_field head, A_fieldList tail) {
-    A_fieldList p = checked_malloc(sizeof(*p));
+A_varList A_VarList(A_var head, A_varList tail) {
+    A_varList p = checked_malloc(sizeof(*p));
     p->head=head;
     p->tail=tail;
     return p;
@@ -216,50 +207,68 @@ A_expList A_ExpList(A_exp head, A_expList tail) {
     p->tail=tail;
     return p;
 }
-A_fundec A_Fundec(A_pos pos, S_symbol name, A_fieldList params, S_symbol result, A_exp body) {
-    A_fundec p = checked_malloc(sizeof(*p));
-    p->pos=pos;
-    p->name=name;
-    p->params=params;
-    p->result=result;
-    p->body=body;
-    return p;
-}
-A_fundecList A_FundecList(A_fundec head, A_fundecList tail) {
-    A_fundecList p = checked_malloc(sizeof(*p));
-    p->head=head;
-    p->tail=tail;
-    return p;
-}
 A_decList A_DecList(A_dec head, A_decList tail) {
     A_decList p = checked_malloc(sizeof(*p));
     p->head=head;
     p->tail=tail;
     return p;
 }
-A_namety A_Namety(S_symbol name, A_ty ty) {
-    A_namety p = checked_malloc(sizeof(*p));
-    p->name=name;
-    p->ty=ty;
+A_def A_GlobalDef(A_pos pos, S_symbol glob, A_ty type, A_varList varlist) {
+    A_def p = checked_malloc(sizeof(*p));
+    p->pos=pos;
+    p->u.globall.glob=glob;
+    p->u.globall.type=type;
+    p->u.globall.varlist=varlist;
     return p;
 }
-A_nametyList A_NametyList(A_namety head, A_nametyList tail) {
-    A_nametyList p = checked_malloc(sizeof(*p));
+A_def A_StructDef(A_pos pos, S_symbol struc, A_ty type, A_stru stru) {
+    A_def p = checked_malloc(sizeof(*p));
+    p->pos=pos;
+    p->u.structt.struc=struc;
+    p->u.structt.type=type;
+    p->u.structt.stru=stru;
+    return p;
+}
+A_def A_FunctionDef(A_pos pos, S_symbol func, A_ty type, A_var returnval, A_paramDec param) {
+    A_def p = checked_malloc(sizeof(*p));
+    p->pos=pos;
+    p->u.funcc.func=func;
+    p->u.funcc.type=type;
+    p->u.funcc.returnval=returnval;
+    p->u.funcc.param=param;
+    return p;
+}
+A_defList A_DefList(A_def head, A_defList tail) {
+    A_defList p = checked_malloc(sizeof(*p));
     p->head=head;
     p->tail=tail;
     return p;
 }
-A_efield A_Efield(S_symbol name, A_exp exp) {
-    A_efield p = checked_malloc(sizeof(*p));
-    p->name=name;
-    p->exp=exp;
+A_stmt A_Stmt(A_pos pos, S_symbol stmt) {
+    A_stmt p = checked_malloc(sizeof(*p));
+    p->pos=pos;
+    p->stmt=stmt;
     return p;
 }
-A_efieldList A_EfieldList(A_efield head, A_efieldList tail) {
-    A_efieldList p = checked_malloc(sizeof(*p));
+A_stmtList A_StmtList(A_stmt head, A_stmtList tail) {
+    A_stmtList p = checked_malloc(sizeof(*p));
     p->head=head;
     p->tail=tail;
     return p;
 }
-
-
+A_stru A_Stru(A_pos pos, S_symbol struc, A_ty type, A_decList declist) {
+    A_stru p = checked_malloc(sizeof(*p));
+    p->pos=pos;
+    p->struc=struc;
+    p->type=type;
+    p->declist=declist;
+    return p;
+}
+A_paramDec A_ParamDec(A_pos pos, S_symbol param, A_ty type, A_var var) {
+    A_paramDec p = checked_malloc(sizeof(*p));
+    p->pos=pos;
+    p->param=param;
+    p->type=type;
+    p->var=var;
+    return p;
+}

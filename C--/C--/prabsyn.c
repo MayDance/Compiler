@@ -17,16 +17,16 @@
 static void pr_var(FILE *out, A_var v, int d);
 static void pr_dec(FILE *out, A_dec v, int d);
 static void pr_ty(FILE *out, A_ty v, int d);
-static void pr_field(FILE *out, A_field v, int d);
-static void pr_fieldList(FILE *out, A_fieldList v, int d);
+static void pr_varList(FILE *out, A_varList v, int d);
 static void pr_expList(FILE *out, A_expList v, int d);
-static void pr_fundec(FILE *out, A_fundec v, int d);
-static void pr_fundecList(FILE *out, A_fundecList v, int d);
 static void pr_decList(FILE *out, A_decList v, int d);
-static void pr_namety(FILE *out, A_namety v, int d);
-static void pr_nametyList(FILE *out, A_nametyList v, int d);
-static void pr_efield(FILE *out, A_efield v, int d);
-static void pr_efieldList(FILE *out, A_efieldList v, int d);
+static void pr_def(FILE *out, A_def v, int d);
+static void pr_defList(FILE *out, A_defList v, int d);
+static void pr_stmt(FILE *out, A_stmt v, int d);
+static void pr_stmtList(FILE *out, A_stmtList v, int d);
+static void pr_stru(FILE *out, A_stru v, int d);
+static void pr_paramDec(FILE *out, A_paramDec v, int d);
+
 
 static void indent(FILE *out, int d) {
     int i;
@@ -159,7 +159,7 @@ static void pr_dec(FILE *out, A_dec v, int d) {
             if (v->u.var.typ) {
                 indent(out, d+1); fprintf(out, "%s,\n", S_name(v->u.var.typ));
             }
-//            pr_exp(out, v->u.var.init, d+1); fprintf(out, ",\n");
+            pr_exp(out, v->u.var.init, d+1); fprintf(out, ",\n");
             indent(out, d+1); fprintf(out, "%s", v->u.var.escape ? "TRUE)" : "FALSE)");
             break;
         case A_arrayDec:
@@ -173,22 +173,15 @@ static void pr_dec(FILE *out, A_dec v, int d) {
 
 static void pr_ty(FILE *out, A_ty v, int d) {
     indent(out, d);
-    fprintf(out, "aTy(%s\n%s)", S_name(v->id), S_name(v->type));
+    fprintf(out, "aTy(%s)", S_name(v->type));
 }
 
-static void pr_field(FILE *out, A_field v, int d) {
-    indent(out, d);
-    fprintf(out, "field(%s,\n", S_name(v->name));
-    indent(out, d+1); fprintf(out, "%s,\n", S_name(v->typ));
-    indent(out, d+1); fprintf(out, "%s", v->escape ? "TRUE)" : "FALSE)");
-}
-
-static void pr_fieldList(FILE *out, A_fieldList v, int d) {
+static void pr_varList(FILE *out, A_varList v, int d) {
     indent(out, d);
     if (v) {
-        fprintf(out, "fieldList(\n");
-        pr_field(out, v->head, d+1); fprintf(out, ",\n");
-        pr_fieldList(out, v->tail, d+1); fprintf(out, ")");
+        fprintf(out, "varList(\n");
+        pr_var(out, v->head, d+1); fprintf(out, ",\n");
+        pr_varList(out, v->tail, d+1); fprintf(out, ")");
     }
     else fprintf(out, "fieldList()");
 }
@@ -205,26 +198,6 @@ static void pr_expList(FILE *out, A_expList v, int d) {
     
 }
 
-static void pr_fundec(FILE *out, A_fundec v, int d) {
-    indent(out, d);
-    fprintf(out, "fundec(%s,\n", S_name(v->name));
-    pr_fieldList(out, v->params, d+1); fprintf(out, ",\n");
-    if (v->result) {
-        indent(out, d+1); fprintf(out, "%s,\n", S_name(v->result));
-    }
-    pr_exp(out, v->body, d+1); fprintf(out, ")");
-}
-
-static void pr_fundecList(FILE *out, A_fundecList v, int d) {
-    indent(out, d);
-    if (v) {
-        fprintf(out, "fundecList(\n");
-        pr_fundec(out, v->head, d+1); fprintf(out, ",\n");
-        pr_fundecList(out, v->tail, d+1); fprintf(out, ")");
-    }
-    else fprintf(out, "fundecList()");
-}
-
 static void pr_decList(FILE *out, A_decList v, int d) {
     indent(out, d);
     if (v) {
@@ -237,41 +210,69 @@ static void pr_decList(FILE *out, A_decList v, int d) {
     
 }
 
-static void pr_namety(FILE *out, A_namety v, int d) {
+static void pr_def(FILE *out, A_def v, int d) {
     indent(out, d);
-    fprintf(out, "namety(%s,\n", S_name(v->name));
-    pr_ty(out, v->ty, d+1); fprintf(out, ")");
+    switch (v->kind) {
+        case A_globalDef:
+            fprintf(out, "globalDef(%s\n", S_name(v->u.globall.glob));
+            pr_ty(out, v->u.globall.type, d+1); fprintf(out, ",\n");
+            pr_varList(out, v->u.globall.varlist, d+1); fprintf(out, ")");
+            break;
+        case A_structDef:
+            fprintf(out, "structDef(%s\n", S_name(v->u.structt.struc));
+            pr_ty(out, v->u.structt.type, d+1); fprintf(out, ",\n");
+            pr_stru(out, v->u.structt.stru, d+1); fprintf(out, ")");
+            break;
+        case A_functionDef:
+            fprintf(out, "functionDef(%s\n", S_name(v->u.funcc.func));
+            pr_ty(out, v->u.funcc.type, d+1); fprintf(out, ",\n");
+            pr_var(out, v->u.funcc.returnval, d+1); fprintf(out, ")");
+            pr_paramDec(out, v->u.funcc.param, d+1); fprintf(out, ")");
+            break;
+        default:
+            assert(0);
+    }
 }
 
-static void pr_nametyList(FILE *out, A_nametyList v, int d) {
+static void pr_defList(FILE *out, A_defList v, int d) {
     indent(out, d);
     if (v) {
-        fprintf(out, "nametyList(\n");
-        pr_namety(out, v->head, d+1); fprintf(out, ",\n");
-        pr_nametyList(out, v->tail, d+1); fprintf(out, ")");
+        fprintf(out, "defList(\n");
+        pr_def(out, v->head, d+1); fprintf(out, ",\n");
+        pr_defList(out, v->tail, d+1);
+        fprintf(out, ")");
     }
-    else fprintf(out, "nametyList()");
+    else fprintf(out, "decList()");
 }
 
-static void pr_efield(FILE *out, A_efield v, int d) {
+static void pr_stmt(FILE *out, A_stmt v, int d) {
+    indent(out, d);
+    fprintf(out, "stmt(%s)", S_name(v->stmt));
+}
+
+static void pr_stmtList(FILE *out, A_stmtList v, int d) {
     indent(out, d);
     if (v) {
-        fprintf(out, "efield(%s,\n", S_name(v->name));
-        pr_exp(out, v->exp, d+1); fprintf(out, ")");
+        fprintf(out, "stmtList(\n");
+        pr_stmt(out, v->head, d+1); fprintf(out, ",\n");
+        pr_stmtList(out, v->tail, d+1);
+        fprintf(out, ")");
     }
-    else fprintf(out, "efield()");
+    else fprintf(out, "decList()");
 }
 
-static void pr_efieldList(FILE *out, A_efieldList v, int d) {
+static void pr_stru(FILE *out, A_stru v, int d) {
     indent(out, d);
-    if (v) {
-        fprintf(out, "efieldList(\n");
-        pr_efield(out, v->head, d+1); fprintf(out, ",\n");
-        pr_efieldList(out, v->tail, d+1); fprintf(out, ")");
-    }
-    else fprintf(out, "efieldList()");
+    fprintf(out, "stmt(%s,\n", S_name(v->struc));
+    pr_ty(out, v->type, d+1); fprintf(out, ",\n");
+    pr_decList(out, v->declist, d+1); fprintf(out, ",\n");
+    fprintf(out, ")");
 }
 
-
-
-
+static void pr_paramDec(FILE *out, A_paramDec v, int d) {
+    indent(out, d);
+    fprintf(out, "paramDec(%s,\n", S_name(v->param));
+    pr_ty(out, v->type, d+1); fprintf(out, ",\n");
+    pr_var(out, v->var, d+1); fprintf(out, ",\n");
+    fprintf(out, ")");
+}
