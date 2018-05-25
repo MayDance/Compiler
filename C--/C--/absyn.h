@@ -31,7 +31,7 @@ typedef enum {INT, FLOAT, CHAR} A_type;
 
 // expression
 struct A_exp_ {
-    enum {A_funExp, A_struExp, A_simpleExp, A_intExp, A_floatExp, A_charExp, A_opExp, A_assignExp, A_notExp} kind;
+    enum {A_funcExp, A_struExp, A_simpleExp, A_intExp, A_floatExp, A_charExp, A_opExp, A_assignExp, A_notExp} kind;
     A_pos pos;
     union {
         struct {
@@ -91,7 +91,7 @@ struct A_ty_ {
     union {
         struct {
             A_type type;
-        } varr;
+        } simplee;
         struct {
             S_symbol tag;
             A_defList deflist;
@@ -114,7 +114,7 @@ struct A_decList_ {
 };
 
 struct A_def_ {
-    enum {A_globalDef, A_structDef, A_funcDef, A_loacalDef} kind;
+    enum {A_globalDef, A_structDef, A_funcDef, A_localDef} kind;
     A_pos pos;
     union {
         struct {

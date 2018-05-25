@@ -51,7 +51,7 @@ extern YYSTYPE yylval;
 # define VOID 287   // void
 # define TYPEDEF 289    // typedef
 
-#endif /* tokens_h */
+#endif // tokens_h 
 
 
 

@@ -9,9 +9,9 @@
 // prabsyn.c - Print Abstract Syntax data structures. Most functions handle an instance of an abstract syntax rule.
 #include <stdio.h>
 #include "util.h"
-#include "symbol.h" /* symbol table data structures */
-#include "absyn.h"  /* abstract syntax data structures */
-#include "prabsyn.h" /* function prototype */
+#include "symbol.h" // symbol table data structures
+#include "absyn.h"  // abstract syntax data structures
+#include "prabsyn.h" // function prototype
 
 // local function prototypes 
 static void pr_var(FILE *out, A_var v, int d);
