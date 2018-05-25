@@ -33,7 +33,7 @@ extern YYSTYPE yylval;
 # define AND 269    // &&
 # define OR 270 // ||
 # define DOT 271    // .
-# define TYPE 272   // int | float
+# define TYPE 272   // int | float | char
 # define LP 273 // (
 # define RP 274 // )
 # define LB 275 // [

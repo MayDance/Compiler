@@ -34,112 +34,53 @@ static void indent(FILE *out, int d) {
         fprintf(out, " ");
 }
 
-// Print A_var types. Indent d spaces.
-static void pr_var(FILE *out, A_var v, int d) {
-    indent(out, d);
-    switch (v->kind) {
-        case A_simpleVar:
-            fprintf(out, "simpleVar(%s)", S_name(v->u.simple));
-            break;
-        case A_fieldVar:
-            fprintf(out, "%s\n", "fieldVar(");
-            pr_var(out, v->u.field.var, d+1); fprintf(out, "%s\n", ",");
-            indent(out, d+1); fprintf(out, "%s)", S_name(v->u.field.sym));
-            break;
-        case A_arrayVar:
-            fprintf(out, "%s\n", "arrayVar(");
-            pr_var(out, v->u.array.var, d+1); fprintf(out, "%s\n", ",");
-            pr_exp(out, v->u.array.exp, d+1); fprintf(out, "%s", ")");
-            break;
-        case A_ptrVar:
-            fprintf(out, "%s\n", "ptrVar(");
-            pr_var(out, v->u.ptr.var, d+1); fprintf(out, "%s", ")");
-            break;
-        default:
-            assert(0);
-    }
-}
-
-
-static char str_oper[][12] = {
-    "PLUS", "MINUS", "TIMES", "DIVIDE",
-    "EQUAL", "NOTEQUAL", "LESSTHAN", "LESSEQ", "GREAT", "GREATEQ"};
+static char str_oper[][12] = {"AND", "OR", "PLUS", "MINUS", "TIMES", "DIVIDE"};
+static char str_type[][12] = {"int", "float", "char"};
 
 static void pr_oper(FILE *out, A_oper d) {
     fprintf(out, "%s", str_oper[d]);
+}
+static void pr_type(FILE *out, A_type t) {
+    fprintf(out, "%s", str_oper[t]);
 }
 
 // Print A_var types. Indent d spaces.
 void pr_exp(FILE *out, A_exp v, int d) {
     indent(out, d);
     switch (v->kind) {
-        case A_varExp:
-            fprintf(out, "varExp(\n"); pr_var(out, v->u.var, d+1);
-            fprintf(out, "%s", ")");
+        case A_funExp:
+            fprintf(out, "funcExp(%s,\n", S_name(v->u.funcc.idd));
+            pr_expList(out, v->u.funcc.args, d+1); fprintf(out, ")");
             break;
-        case A_nilExp:
-            fprintf(out, "nilExp()");
+        case A_struExp:
+            fprintf(out, "struExp(%s,\n", S_name(v->u.struu.stru));
+            pr_exp(out, v->u.struu.exp, d+1); fprintf(out, ")");
             break;
+        case A_simpleExp:
+            fprintf(out, "simpleExp(%s)", S_name(v->u.simple.idd));
         case A_intExp:
-            fprintf(out, "intExp(%d)", v->u.intt);
+            fprintf(out, "intExp(%d)", v->u.i);
             break;
         case A_floatExp:
-            fprintf(out, "floatExp(%d)", v->u.intt);
+            fprintf(out, "floatExp(%f)", v->u.f);
             break;
-        case A_callExp:
-            fprintf(out, "callExp(%s,\n", S_name(v->u.call.func));
-            pr_expList(out, v->u.call.args, d+1); fprintf(out, ")");
+        case A_charExp:
+            fprintf(out, "charExp(%c)", v->u.c);
             break;
         case A_opExp:
             fprintf(out, "opExp(\n");
-            indent(out, d+1); pr_oper(out, v->u.op.oper); fprintf(out, ",\n");
-            pr_exp(out, v->u.op.left, d+1); fprintf(out, ",\n");
-            pr_exp(out, v->u.op.right, d+1); fprintf(out, ")");
+            indent(out, d+1); pr_oper(out, v->u.opp.oper); fprintf(out, ",\n");
+            pr_exp(out, v->u.opp.left, d+1); fprintf(out, ",\n");
+            pr_exp(out, v->u.opp.right, d+1); fprintf(out, ")");
             break;
         case A_assignExp:
             fprintf(out, "assignExp(\n");
-            pr_var(out, v->u.assign.var, d+1); fprintf(out, ",\n");
-            pr_exp(out, v->u.assign.exp, d+1); fprintf(out, ")");
+            pr_exp(out, v->u.assignn.left, d+1); fprintf(out, ",\n");
+            pr_exp(out, v->u.assignn.right, d+1); fprintf(out, ")");
             break;
-        case A_ifExp:
-            fprintf(out, "iffExp(\n");
-            pr_exp(out, v->u.iff.test, d+1); fprintf(out, ",\n");
-            pr_exp(out, v->u.iff.then, d+1);
-            if (v->u.iff.elsee) { /* else is optional */
-                fprintf(out, ",\n");
-                pr_exp(out, v->u.iff.elsee, d+1);
-            }
-            fprintf(out, ")");
-            break;
-        case A_whileExp:
-            fprintf(out, "whileExp(\n");
-            pr_exp(out, v->u.whilee.test, d+1); fprintf(out, ",\n");
-            pr_exp(out, v->u.whilee.body, d+1); fprintf(out, ")\n");
-            break;
-        case A_forExp:
-            fprintf(out, "forExp(%s,\n", S_name(v->u.forr.var));
-            pr_exp(out, v->u.forr.lo, d+1); fprintf(out, ",\n");
-            pr_exp(out, v->u.forr.hi, d+1); fprintf(out, "%s\n", ",");
-            pr_exp(out, v->u.forr.body, d+1); fprintf(out, ",\n");
-            indent(out, d+1); fprintf(out, "%s", v->u.forr.escape ? "TRUE)" : "FALSE)");
-            break;
-        case A_breakExp:
-            fprintf(out, "breakExp()");
-            break;
-        case A_continueExp:
-            fprintf(out, "continueExp()");
-            break;
-        case A_returnExp:
-            fprintf(out, "returnExp(\n");
-            pr_exp(out, v->u.rtn, d+1); fprintf(out, ")");
-            break;
-        case A_seqExp:
-            fprintf(out, "seqExp(\n");
-            pr_expList(out, v->u.seq, d+1); fprintf(out, ")");
-            break;
-        case A_structExp:
-            fprintf(out, "structExp(%s,\n", S_name(v->u.structt.stru));
-            pr_expList(out, v->u.structt.vars, d+1); fprintf(out, ")");
+        case A_notExp:
+            fprintf(out, "notExp(\n"); pr_exp(out, v->u.nott.exp, d+1);
+            fprintf(out, "%s", ")");
             break;
         default:
             assert(0);
@@ -149,18 +90,14 @@ void pr_exp(FILE *out, A_exp v, int d) {
 static void pr_dec(FILE *out, A_dec v, int d) {
     indent(out, d);
     switch (v->kind) {
-        case A_functionDec:
+        case A_funcDec:
             fprintf(out, "functionDec(%s\n", S_name(v->u.funcc.func));
-            pr_expList(out, v->u.funcc.params, d+1); fprintf(out, ",\n");
-            pr_expList(out, v->u.funcc.body, d+1); fprintf(out, ")");
+            pr_varList(out, v->u.funcc.body, d+1); fprintf(out, ")");
             break;
         case A_varDec:
-            fprintf(out, "varDec(%s,\n", S_name(v->u.var.var));
-            if (v->u.var.typ) {
-                indent(out, d+1); fprintf(out, "%s,\n", S_name(v->u.var.typ));
-            }
-            pr_exp(out, v->u.var.init, d+1); fprintf(out, ",\n");
-            indent(out, d+1); fprintf(out, "%s", v->u.var.escape ? "TRUE)" : "FALSE)");
+            fprintf(out, "varDec(%s,\n", S_name(v->u.varr.var));
+            pr_exp(out, v->u.varr.init, d+1); fprintf(out, ",\n");
+            indent(out, d+1); fprintf(out, "%s", v->u.varr.escape ? "TRUE)" : "FALSE)");
             break;
         case A_arrayDec:
             fprintf(out, "arrayDec(%s\n", S_name(v->u.arrayy.arr));
@@ -173,7 +110,18 @@ static void pr_dec(FILE *out, A_dec v, int d) {
 
 static void pr_ty(FILE *out, A_ty v, int d) {
     indent(out, d);
-    fprintf(out, "aTy(%s)", S_name(v->type));
+    switch (v->kind) {
+        case A_simpleTy:
+            fprintf(out, "simpleTy(\n");
+            pr_type(out, v->u.varr.type);  fprintf(out, ")");
+            break;
+        case A_struTy:
+            fprintf(out, "struTy(%s\n", S_name(v->u.structt.tag));
+            pr_defList(out, v->u.structt.deflist, d+1); fprintf(out, ")");
+            break;
+        default:
+            assert(0);
+    }
 }
 
 static void pr_varList(FILE *out, A_varList v, int d) {
@@ -214,20 +162,19 @@ static void pr_def(FILE *out, A_def v, int d) {
     indent(out, d);
     switch (v->kind) {
         case A_globalDef:
-            fprintf(out, "globalDef(%s\n", S_name(v->u.globall.glob));
+            fprintf(out, "globalDef(\n");
             pr_ty(out, v->u.globall.type, d+1); fprintf(out, ",\n");
-            pr_varList(out, v->u.globall.varlist, d+1); fprintf(out, ")");
+            pr_decList(out, v->u.globall.declist, d+1); fprintf(out, ")");
             break;
         case A_structDef:
-            fprintf(out, "structDef(%s\n", S_name(v->u.structt.struc));
+            fprintf(out, "structDef(\n");
             pr_ty(out, v->u.structt.type, d+1); fprintf(out, ",\n");
-            pr_stru(out, v->u.structt.stru, d+1); fprintf(out, ")");
             break;
-        case A_functionDef:
-            fprintf(out, "functionDef(%s\n", S_name(v->u.funcc.func));
+        case A_funcDef:
+            fprintf(out, "funcDef(\n");
             pr_ty(out, v->u.funcc.type, d+1); fprintf(out, ",\n");
-            pr_var(out, v->u.funcc.returnval, d+1); fprintf(out, ")");
-            pr_paramDec(out, v->u.funcc.param, d+1); fprintf(out, ")");
+            pr_dec(out, v->u.funcc.funcdec, d+1); fprintf(out, ",\n");
+            pr_stmt(out, v->u.funcc.compst, d+1); fprintf(out, ")");
             break;
         default:
             assert(0);
@@ -247,7 +194,33 @@ static void pr_defList(FILE *out, A_defList v, int d) {
 
 static void pr_stmt(FILE *out, A_stmt v, int d) {
     indent(out, d);
-    fprintf(out, "stmt(%s)", S_name(v->stmt));
+    switch (v->kind) {
+        case A_expStmt:
+            fprintf(out, "expStmt(\n");
+            pr_exp(out, v->u.expp.exp, d+1); fprintf(out, ",\n");
+            break;
+        case A_retnStmt:
+            fprintf(out, "retnStmt(\n");
+            pr_exp(out, v->u.retn.exp, d+1); fprintf(out, ",\n");
+            break;
+        case A_ifStmt:
+            fprintf(out, "ifStmt(\n");
+            pr_exp(out, v->u.iff.condition, d+1); fprintf(out, ",\n");
+            pr_stmt(out, v->u.iff.iff, d+1); fprintf(out, ",\n");
+            pr_stmt(out, v->u.iff.elsee, d+1); fprintf(out, ")");
+            break;
+        case A_breakStmt:
+            fprintf(out, "breakStmt()");
+        case A_continueStmt:
+            fprintf(out, "continueStmt()");
+        case A_compStmt:
+            fprintf(out, "ifStmt(\n");
+            pr_decList(out, v->u.compst.declist, d+1); fprintf(out, ",\n");
+            pr_stmtList(out, v->u.compst.stmtlist, d+1); fprintf(out, ",\n");
+            break;
+        default:
+            assert(0);
+    }
 }
 
 static void pr_stmtList(FILE *out, A_stmtList v, int d) {
@@ -261,18 +234,9 @@ static void pr_stmtList(FILE *out, A_stmtList v, int d) {
     else fprintf(out, "decList()");
 }
 
-static void pr_stru(FILE *out, A_stru v, int d) {
-    indent(out, d);
-    fprintf(out, "stmt(%s,\n", S_name(v->struc));
-    pr_ty(out, v->type, d+1); fprintf(out, ",\n");
-    pr_decList(out, v->declist, d+1); fprintf(out, ",\n");
-    fprintf(out, ")");
-}
-
 static void pr_paramDec(FILE *out, A_paramDec v, int d) {
     indent(out, d);
-    fprintf(out, "paramDec(%s,\n", S_name(v->param));
+    fprintf(out, "paramDec(,\n");
     pr_ty(out, v->type, d+1); fprintf(out, ",\n");
-    pr_var(out, v->var, d+1); fprintf(out, ",\n");
-    fprintf(out, ")");
+    pr_dec(out, v->dec, d+1); fprintf(out, ")");
 }

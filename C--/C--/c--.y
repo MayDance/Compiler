@@ -23,7 +23,6 @@ void yyerror(char *s)
     string sval;
     S_symbol sym;
 
-    A_var var;
     A_exp exp;
     A_dec dec;
     A_ty ty;
@@ -35,7 +34,6 @@ void yyerror(char *s)
     A_defList defList;
     A_stmt stmt;
     A_stmtList stmtList;
-    A_stru stru;
     A_paramDec paramDec;
 }
 
@@ -59,46 +57,43 @@ LP RP LB RB LC RC IF ELSE WHILE FOR BREAK CONTINUE STRUCT RETURN VOID TYPEDEF
 
 // declare non-terminals
 %type <sym> Opttag ID
-%type <var> Var
 %type <varList> Varlist
 %type <exp> Exp
-%type <expList> Explist
+%type <expList> Explist Args
 %type <dec> Dec Funcdec Vardec Arraydec
 %type <decList> Declist Program
-%type <ty> Ty Varty Stru
+%type <ty> Varty Stru
 %type <def> Def
 %type <defList> Deflist
 %type <stmt> Stmt
 %type <stmtList> Stmtlist Compst
-%type <stru> Stru
 %type <paramDec> Paramdec
 %%
-{$$=A_VarExp(EM_tokPos,A_SimpleVar(EM_tokPos,S_Symbol($1)));}
+
 // high-level definetions
 Program:    Deflist     {absyn_root=$1;}
             ;
 
-Deflist:     Def Deflist        {$$=A_decList(EM_tokPos, $1, $2);}
+Deflist:     Def Deflist        {$$=A_defList(EM_tokPos, $1, $2);}
             |                   {$$=NULL;}
             ;
 
-Def:     Specifier Declist SEMICOLON    {$$=A_globalDef(EM_tokPos, $1, $2);}
-        |Specifier SEMICOLON            {$$=A_struDef(EM_tokPos, $1);}
-        |Specifier Funcdec Compst       {$$=A_funcDef(EM_tokPos, $1, $2, $3);}
-        |error SEMICOLON
+Def:     Specifier Declist SEMICOLON    {$$=A_GlobalDef(EM_tokPos, $1, $2);}
+        |Specifier SEMICOLON            {$$=A_StruDef(EM_tokPos, $1);}
+        |Specifier Funcdec Compst       {$$=A_FuncDef(EM_tokPos, $1, $2, $3);}
         ;
 
-Declist:         Dec                    {$$=decList(EM_tokPos, $1, NULL);}
-                |Dec COMMA Declist      {$$=decList(EM_tokPos, $1, $3);}
+Declist:         Dec                    {$$=A_DecList(EM_tokPos, $1, NULL);}
+                |Dec COMMA Declist      {$$=A_DecList(EM_tokPos, $1, $3);}
                 ;
 
 // specifiers
-Specifier:   ty         {$$=$1;}
+Specifier:   TYPE       {$$=A_SimpleTy(EM_tokPos, $1)}
             |Stru       {$$=$1;}
             ;
 
-Stru:    STRUCT Opttag LC Deflist RC    {$$=struTy(EM_tokPos, $2, $4);}
-        |STRUCT ID                      {$$=struTy(EM_tokPos, $2, NULL);}
+Stru:    STRUCT Opttag LC Deflist RC    {$$=A_StruTy(EM_tokPos, $2, $4);}
+        |STRUCT ID                      {$$=A_StruTy(EM_tokPos, $2, NULL);}
         ;
 
 Opttag:  ID     {$$=$1;}
@@ -106,74 +101,75 @@ Opttag:  ID     {$$=$1;}
         ;
 
 //declarators
-Vardec:  ID                     {$$=varDec(EM_tokPos, $1);}
-        |Vardec LB INT RB       {$$=arrayDec(EM_tokPos, $1, $3);}
+Vardec:  ID                     {$$=A_VarDec(EM_tokPos, $1, NULL);}
+        |Vardec LB INT RB       {$$=A_ArrayDec(EM_tokPos, $1, $3);}
         ;
 
-Funcdec:         ID LP Varlist RP       {$$=funcDec(EM_tokPos, $1, $3);}
-                |ID LP RP               {$$=funcDec(EM_tokPos, $1, NULL);}
+Funcdec:         ID LP Varlist RP       {$$=A_FuncDec(EM_tokPos, $1, $3);}
+                |ID LP RP               {$$=A_FuncDec(EM_tokPos, $1, NULL);}
                 ;
 
-Varlist:         Paramdec COMMA Varlist {$$=varList(EM_tokPos, $1, $3);}
-                |Paramdec               {$$=varList(EM_tokPos, $1, NULL);}
+Varlist:         Paramdec COMMA Varlist {$$=A_VarList(EM_tokPos, $1, $3);}
+                |Paramdec               {$$=A_VarList(EM_tokPos, $1, NULL);}
                 ;
 
-Paramdec:        Specifier Vardec       {$$=paramDec(EM_tokPos, $1, $2);}
+Paramdec:        Specifier Vardec       {$$=A_ParamDec(EM_tokPos, $1, $2);}
                 ;
 
 // statements
-Compst:  LC Declist Stmtlist RC {$$=compStmt(EM_tokPos, $1, $2);}
+Compst:  LC Declist Stmtlist RC {$$=A_CompStmt(EM_tokPos, $1, $2);}
         ;
 
-Stmtlist:    Stmt Stmtlist      {$$=stmtList(EM_tokPos, $1, $2);}
+Stmtlist:    Stmt Stmtlist      {$$=A_StmtList(EM_tokPos, $1, $2);}
             |                   {$$=NULL;}
             ;
 
-Stmt:    Exp SEMICOLON                  {$$=stmt(EM_tokPos, $1);}
-        |Compst                         {$$=stmt(EM_tokPos, $1);}
-        |RETURN Exp SEMICOLON           {$$=stmt(EM_tokPos, $2);}
-        |IF LP Exp RP Stmt              {$$=stmt(EM_tokPos, $3, $5, NULL);}
-        |IF LP Exp RP Stmt ELSE Stmt    {$$=stmt(EM_tokPos, $3, $5, $7);}
-        |WHILE LP Exp RP Stmt           {$$=stmt(EM_tokPos, $3, $5);}
-        |BREAK SEMICOLON                {$$=stmt(EM_tokPos);}
-        |CONTINUE SEMICOLON             {$$=stmt(EM_tokPos);}
+Stmt:    Exp SEMICOLON                  {$$=A_ExpStmt(EM_tokPos, $1);}
+        |Compst                         {$$=$1;}
+        |RETURN Exp SEMICOLON           {$$=A_RetnStmt(EM_tokPos, $2);}
+        |IF LP Exp RP Stmt              {$$=A_IfStmt(EM_tokPos, $3, $5, NULL);}
+        |IF LP Exp RP Stmt ELSE Stmt    {$$=A_IfStmt(EM_tokPos, $3, $5, $7);}
+        |WHILE LP Exp RP Stmt           {$$=A_WhileStmt(EM_tokPos, $3, $5);}
+        |BREAK SEMICOLON                {$$=A_BreakStmt(EM_tokPos);}
+        |CONTINUE SEMICOLON             {$$=A_ContinueStmt(EM_tokPos);}
         ;
 
 // local definations
-Deflist:         Def Deflist    {$$=defList(EM_tokPos, $1, $2);}
+Deflist:         Def Deflist    {$$=A_DefList(EM_tokPos, $1, $2);}
                 |               {$$=NULL;}
                 ;
 
-Def:     Specifier Declist SEMICOLON    {$$=def(EM_tokPos, $1, $2);}
+Def:     Specifier Declist SEMICOLON    {$$=A_LocalDef(EM_tokPos, $1, $2);}
         ;
 
-Declist:         Dec                    {$$=decList(EM_tokPos, $1, NULL);}
-                |Dec COMMA Declist      {$$=decList(EM_tokPos, $1, $2);}
+Declist:         Dec                    {$$=A_DecList(EM_tokPos, $1, NULL);}
+                |Dec COMMA Declist      {$$=A_DecList(EM_tokPos, $1, $2);}
                 ;
 
 Dec:     Vardec                 {$$=$1;}
-        |Vardec ASSIGN Exp      {$$=varDec(EM_tokPos, $1, $2);}
+        |Vardec ASSIGN Exp      {$$=A_VarDec(EM_tokPos, $1, $2);}
 
 // expressions
 Exp:     Exp ASSIGN Exp {$$=A_AssignExp(EM_tokPos, $1, $3);}
-        |Exp AND Exp    {$$=A_OpExp(EM_tokPos, $1, $3);}
-        |Exp OR Exp     {$$=A_OpExp(EM_tokPos, $1, $3);}
+        |Exp AND Exp    {$$=A_OpExp(EM_tokPos, A_andOP, $1, $3);}
+        |Exp OR Exp     {$$=A_OpExp(EM_tokPos, A_orOP, $1, $3);}
         |Exp REL Exp    {$$=A_OpExp(EM_tokPos, REL, $1, $3);}
         |Exp PLUS Exp   {$$=A_OpExp(EM_tokPos, A_plusOp, $1, $3);}
         |Exp MINUS Exp  {$$=A_OpExp(EM_tokPos, A_minusOp, $1, $3);}
         |Exp TIMES Exp  {$$=A_OpExp(EM_tokPos, A_timesOp, $1, $3);}
         |Exp DIVIDE Exp {$$=A_OpExp(EM_tokPos, A_divideOp, $1, $3);}
         |LP Exp RP      {$$=$2;}
-        |MINUS Exp      {$$=A_OPExp(EM_tokPos, A_minusOp, 0, $2);}
-        |NOT Exp        {$$=A_OpExp(EM_tokPos, $2);}
+        |MINUS Exp      {$$=A_OPExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), $2);}
+        |NOT Exp        {$$=A_NotExp(EM_tokPos, $2);}
         |ID LP Args RP  {$$=A_FuncExp(EM_tokPos, $1, $3);}
         |Exp LB Exp RB  {$$=A_ArrayExp(EM_tokPos, $1, $3);}
         |Exp DOT ID     {$$=A_StruExp(EM_tokPos, $1, $3);}
         |ID             {$$=A_SimpleExp(EM_tokPos, $1);}
         |INT            {$$=A_IntExp(EM_tokPos, $1);}
         |FLOAT          {$$=A_FloatExp(EM_tokPos, $1);}
+        |CHAR           {$$=A_IntExp(EM_tokPos, $1)};
 
-Args:    Exp COMMA Args {$$=A_Args(EM_tokPos, $1, $2);}
-        |Exp            {$$=$1;}
+Args:    Exp COMMA Args {$$=A_Explist(EM_tokPos, $1, $2);}
+        |Exp            {$$=A_Explist(EM_tokPos, $1, NULL);}
 
 %%

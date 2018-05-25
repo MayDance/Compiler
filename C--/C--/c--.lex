@@ -82,6 +82,7 @@ id    {adjust(); yylval.sval=yytext; return ID;}
 "short" {adjust(); return SHORT;}
 "signed"    {adjust(); return SIGNED;}
 "unsigned"  {adjust(); return UNSIGNED;}
+integer|float|char  {adjust(); return TYPE;}
 
 "," {adjust(); return COMMA;}
 ";" {adjust(); return SEMICOLON;}
