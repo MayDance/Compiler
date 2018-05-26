@@ -7,6 +7,7 @@
 //
 
 // util.c - commonly used utility functions.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -8,24 +8,20 @@
 
 // prabsyn.c - Print Abstract Syntax data structures. Most functions handle an instance of an abstract syntax rule.
 #include <stdio.h>
-#include "util.h"
-#include "symbol.h" // symbol table data structures
-#include "absyn.h"  // abstract syntax data structures
 #include "prabsyn.h" // function prototype
 
-// local function prototypes 
-static void pr_var(FILE *out, A_var v, int d);
+// local function prototypes
 static void pr_dec(FILE *out, A_dec v, int d);
 static void pr_ty(FILE *out, A_ty v, int d);
-static void pr_varList(FILE *out, A_varList v, int d);
 static void pr_expList(FILE *out, A_expList v, int d);
 static void pr_decList(FILE *out, A_decList v, int d);
 static void pr_def(FILE *out, A_def v, int d);
 static void pr_defList(FILE *out, A_defList v, int d);
 static void pr_stmt(FILE *out, A_stmt v, int d);
 static void pr_stmtList(FILE *out, A_stmtList v, int d);
-static void pr_stru(FILE *out, A_stru v, int d);
+static void pr_compStmt(FILE *out, A_compStmt v, int d);
 static void pr_paramDec(FILE *out, A_paramDec v, int d);
+static void pr_paramList(FILE *out, A_paramList v, int d);
 
 
 static void indent(FILE *out, int d) {
@@ -35,7 +31,6 @@ static void indent(FILE *out, int d) {
 }
 
 static char str_oper[][12] = {"AND", "OR", "PLUS", "MINUS", "TIMES", "DIVIDE"};
-static char str_type[][12] = {"int", "float", "char"};
 
 static void pr_oper(FILE *out, A_oper d) {
     fprintf(out, "%s", str_oper[d]);
@@ -44,11 +39,11 @@ static void pr_type(FILE *out, A_type t) {
     fprintf(out, "%s", str_oper[t]);
 }
 
-// Print A_var types. Indent d spaces.
+// Print A_exp types. Indent d spaces.
 void pr_exp(FILE *out, A_exp v, int d) {
     indent(out, d);
     switch (v->kind) {
-        case A_funExp:
+        case A_funcExp:
             fprintf(out, "funcExp(%s,\n", S_name(v->u.funcc.idd));
             pr_expList(out, v->u.funcc.args, d+1); fprintf(out, ")");
             break;
@@ -92,7 +87,7 @@ static void pr_dec(FILE *out, A_dec v, int d) {
     switch (v->kind) {
         case A_funcDec:
             fprintf(out, "functionDec(%s\n", S_name(v->u.funcc.func));
-            pr_varList(out, v->u.funcc.body, d+1); fprintf(out, ")");
+            pr_paramList(out, v->u.funcc.body, d+1); fprintf(out, ")");
             break;
         case A_varDec:
             fprintf(out, "varDec(%s,\n", S_name(v->u.varr.var));
@@ -113,7 +108,7 @@ static void pr_ty(FILE *out, A_ty v, int d) {
     switch (v->kind) {
         case A_simpleTy:
             fprintf(out, "simpleTy(\n");
-            pr_type(out, v->u.varr.type);  fprintf(out, ")");
+            pr_type(out, v->u.simplee.type);  fprintf(out, ")");
             break;
         case A_struTy:
             fprintf(out, "struTy(%s\n", S_name(v->u.structt.tag));
@@ -122,16 +117,6 @@ static void pr_ty(FILE *out, A_ty v, int d) {
         default:
             assert(0);
     }
-}
-
-static void pr_varList(FILE *out, A_varList v, int d) {
-    indent(out, d);
-    if (v) {
-        fprintf(out, "varList(\n");
-        pr_var(out, v->head, d+1); fprintf(out, ",\n");
-        pr_varList(out, v->tail, d+1); fprintf(out, ")");
-    }
-    else fprintf(out, "fieldList()");
 }
 
 static void pr_expList(FILE *out, A_expList v, int d) {
@@ -174,7 +159,7 @@ static void pr_def(FILE *out, A_def v, int d) {
             fprintf(out, "funcDef(\n");
             pr_ty(out, v->u.funcc.type, d+1); fprintf(out, ",\n");
             pr_dec(out, v->u.funcc.funcdec, d+1); fprintf(out, ",\n");
-            pr_stmt(out, v->u.funcc.compst, d+1); fprintf(out, ")");
+            pr_compStmt(out, v->u.funcc.compst, d+1); fprintf(out, ")");
             break;
         default:
             assert(0);
@@ -213,11 +198,6 @@ static void pr_stmt(FILE *out, A_stmt v, int d) {
             fprintf(out, "breakStmt()");
         case A_continueStmt:
             fprintf(out, "continueStmt()");
-        case A_compStmt:
-            fprintf(out, "ifStmt(\n");
-            pr_decList(out, v->u.compst.declist, d+1); fprintf(out, ",\n");
-            pr_stmtList(out, v->u.compst.stmtlist, d+1); fprintf(out, ",\n");
-            break;
         default:
             assert(0);
     }
@@ -234,9 +214,26 @@ static void pr_stmtList(FILE *out, A_stmtList v, int d) {
     else fprintf(out, "decList()");
 }
 
+static void pr_compStmt(FILE *out, A_compStmt v, int d) {
+    fprintf(out, "compStmt(\n");
+    pr_decList(out, v->declist, d+1); fprintf(out, ",\n");
+    pr_stmtList(out, v->stmtlist, d+1); fprintf(out, ")");
+}
+
 static void pr_paramDec(FILE *out, A_paramDec v, int d) {
     indent(out, d);
     fprintf(out, "paramDec(,\n");
     pr_ty(out, v->type, d+1); fprintf(out, ",\n");
     pr_dec(out, v->dec, d+1); fprintf(out, ")");
+}
+
+static void pr_paramList(FILE *out, A_paramList v, int d) {
+    indent(out, d);
+    if (v) {
+        fprintf(out, "paramList(\n");
+        pr_paramDec(out, v->head, d+1); fprintf(out, ",\n");
+        pr_paramList(out, v->tail, d+1);
+        fprintf(out, ")");
+    }
+    else fprintf(out, "paramList()");
 }

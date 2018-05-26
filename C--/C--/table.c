@@ -8,7 +8,6 @@
 
 // table.c - Functions to manipulate generic tables.
 #include <stdio.h>
-#include "util.h"
 #include "table.h"
 
 #define TABSIZE 127

@@ -8,9 +8,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "util.h"
 #include "symbol.h"
-#include "table.h"
 
 struct S_symbol_ {
     string name;

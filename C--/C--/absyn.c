@@ -7,9 +7,8 @@
 //
 
 // absyn.c - Abstract Syntax Functions. Most functions create an instance of an abstract syntax rule.
-#include "util.h"
-#include "symbol.h" /* symbol table data structures */
-#include "absyn.h"  /* abstract syntax data structures */
+
+#include "absyn.h"  // abstract syntax data structures
 
 A_exp A_FuncExp(A_pos pos, S_symbol idd, A_expList args) {
     A_exp p = checked_malloc(sizeof(*p));
@@ -79,8 +78,16 @@ A_exp A_NotExp(A_pos pos, A_exp exp) {
     p->u.nott.exp=exp;
     return p;
 }
+A_exp A_ArrayExp(A_pos pos, A_exp exp1, A_exp exp2) {
+    A_exp p = checked_malloc(sizeof(*p));
+    p->kind=A_arrayExp;
+    p->pos=pos;
+    p->u.arrayy.exp1=exp1;
+    p->u.arrayy.exp2=exp2;
+    return p;
+}
 
-A_dec A_FuncDec(A_pos pos, S_symbol func, A_varList body) {
+A_dec A_FuncDec(A_pos pos, S_symbol func, A_paramList body) {
     A_dec p = checked_malloc(sizeof(*p));
     p->kind=A_funcDec;
     p->pos=pos;
@@ -122,12 +129,6 @@ A_ty A_StruTy(A_pos pos, S_symbol tag, A_defList deflist) {
     return p;
 }
 
-A_varList A_VarList(A_var head, A_varList tail) {
-    A_varList p = checked_malloc(sizeof(*p));
-    p->head=head;
-    p->tail=tail;
-    return p;
-}
 A_expList A_ExpList(A_exp head, A_expList tail) {
     A_expList p = checked_malloc(sizeof(*p));
     p->head=head;
@@ -155,7 +156,7 @@ A_def A_StructDef(A_pos pos, A_ty type) {
     p->u.structt.type=type;
     return p;
 }
-A_def A_FuncDef(A_pos pos, A_ty type, A_dec funcdec, A_stmt compst) {
+A_def A_FuncDef(A_pos pos, A_ty type, A_dec funcdec, A_compStmt compst) {
     A_def p = checked_malloc(sizeof(*p));
     p->kind=A_funcDec;
     p->pos=pos;
@@ -222,14 +223,6 @@ A_stmt A_ContinueStmt(A_pos pos) {
     p->pos=pos;
     return p;
 }
-A_stmt A_CompStmt(A_pos pos, A_decList declist, A_stmtList stmtlist) {
-    A_stmt p = checked_malloc(sizeof(*p));
-    p->kind=A_compStmt;
-    p->pos=pos;
-    p->u.compst.declist=declist;
-    p->u.compst.stmtlist=stmtlist;
-    return p;
-}
 
 A_stmtList A_StmtList(A_stmt head, A_stmtList tail) {
     A_stmtList p = checked_malloc(sizeof(*p));
@@ -238,10 +231,25 @@ A_stmtList A_StmtList(A_stmt head, A_stmtList tail) {
     return p;
 }
 
+A_compStmt A_CompStmt(A_pos pos, A_decList declist, A_stmtList stmtlist) {
+    A_compStmt p = checked_malloc(sizeof(*p));
+    p->pos=pos;
+    p->declist=declist;
+    p->stmtlist=stmtlist;
+    return p;
+}
+
 A_paramDec A_ParamDec(A_pos pos, A_ty type, A_dec dec) {
     A_paramDec p = checked_malloc(sizeof(*p));
     p->pos=pos;
     p->type=type;
     p->dec=dec;
+    return p;
+}
+
+A_paramList A_ParamList(A_paramDec head, A_paramList tail) {
+    A_paramList p = checked_malloc(sizeof(*p));
+    p->head=head;
+    p->tail=tail;
     return p;
 }

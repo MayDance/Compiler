@@ -6,7 +6,13 @@
 //  Copyright © 2018 Starblo Hong. All rights reserved.
 //
 
+#ifndef symbol_h
+#define symbol_h
+
 // symbol.h - Symbols and symbol-tables
+#include "util.h"
+#include "table.h"
+
 typedef struct S_symbol_ *S_symbol;
 
 // Make a unique symbol from a given string. Different calls to S_Symbol("foo") will yield the same S_symbol value, even if the "foo" strings are at different locations.
@@ -33,4 +39,4 @@ void S_beginScope(S_table t);
 // Remove any bindings entered since the current scope began, and end the current scope. 
 void S_endScope(S_table t);
 
-
+#endif
