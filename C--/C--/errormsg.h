@@ -22,3 +22,4 @@ void EM_impossible(string,...);
 void EM_reset(string filename);
 
 #endif
+ 

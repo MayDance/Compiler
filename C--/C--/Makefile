@@ -7,13 +7,13 @@ errormsg.o: errormsg.c errormsg.h util.h
 lex.yy.o: lex.yy.c errormsg.h absyn.h y.tab.h
 	cc -g -c lex.yy.c
 
-y.tab.o: y.tab.c util.h symbol.h errormsg.h absyn.h
-	cc -g -c y.tab.c
+y.tab.c: c--.y
+	bison -d c--.y -o y.tab.c
 
 y.tab.h: y.tab.c
 
-y.tab.c: c--.y
-	bison -dt c--.y -o y.tab.c
+y.tab.o: y.tab.c util.h symbol.h errormsg.h absyn.h
+	cc -g -c y.tab.c
 
 lex.yy.c: c--.lex
 	flex c--.lex
@@ -27,7 +27,7 @@ symbol.o: symbol.c util.h symbol.h table.h
 absyn.o: absyn.c util.h symbol.h absyn.h
 	cc -g -c absyn.c
 
-parse.o: parse.c symbol.h absyn.h errormsg.h parse.h
+parse.o: parse.c symbol.h absyn.h errormsg.h parse.h prabsyn.c
 	cc -g -c parse.c
 
 prabsyn.o: prabsyn.c util.h symbol.h absyn.h errormsg.h prabsyn.h

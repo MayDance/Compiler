@@ -16,7 +16,6 @@ typedef union  {
 } YYSTYPE;
 extern YYSTYPE yylval;
 
-
 # define ID 258 // A character string consisting of 52 upper- or lower-case alphabetic, 10 numeric and one underscore characters. Besides, an identifier must not startwith a digit3
 # define INT 259    // int: A sequence of digits without spaces
 # define FLOAT 260 // float: A real number consisting of digits and one decimal point. The decimal point must be surrounded by at least one digit

@@ -12,6 +12,8 @@
 #include "util.h"
 #include "symbol.h" // symbol table data structures
 #include "absyn.h"  // abstract syntax data structures
-void pr_exp(FILE *out, A_exp v, int d);
+
+void pr_defList(FILE *out, A_defList v, int d);
 
 #endif
+ 

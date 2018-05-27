@@ -5,10 +5,26 @@
 //  Created by Starblo Hong on 20/05/2018.
 //  Copyright © 2018 Starblo Hong. All rights reserved.
 //
-
+ 
 // absyn.c - Abstract Syntax Functions. Most functions create an instance of an abstract syntax rule.
 
 #include "absyn.h"  // abstract syntax data structures
+
+A_var A_SimpleVar(A_pos pos, S_symbol idd) {
+    A_var p = checked_malloc(sizeof(*p));
+    p->kind=A_simpleVar;
+    p->pos=pos;
+    p->u.simplee=idd;
+    return p;
+}
+A_var A_ArrayVar(A_pos pos, A_var var, int size) {
+    A_var p = checked_malloc(sizeof(*p));
+    p->kind=A_arrayVar;
+    p->pos=pos;
+    p->u.arrayy.simple=var;
+    p->u.arrayy.size=size;
+    return p;
+}
 
 A_exp A_FuncExp(A_pos pos, S_symbol idd, A_expList args) {
     A_exp p = checked_malloc(sizeof(*p));
@@ -95,22 +111,13 @@ A_dec A_FuncDec(A_pos pos, S_symbol func, A_paramList body) {
     p->u.funcc.body=body;
     return p;
 }
-A_dec A_VarDec(A_pos pos, S_symbol var, A_exp init) {
+A_dec A_VarDec(A_pos pos, A_var var, A_exp init) {
     A_dec p = checked_malloc(sizeof(*p));
     p->kind=A_varDec;
     p->pos=pos;
     p->u.varr.var=var;
     p->u.varr.init=init;
     p->u.varr.escape=TRUE;
-    return p;
-}
-A_dec A_ArrayDec(A_pos pos, S_symbol arr, int size) {
-    A_dec p = checked_malloc(sizeof(*p));
-    p->kind=A_arrayDec;
-    p->pos=pos;
-    p->u.arrayy.arr=arr;
-    p->u.arrayy.size=size;
-    p->u.arrayy.escape=TRUE;
     return p;
 }
 
@@ -165,7 +172,7 @@ A_def A_FuncDef(A_pos pos, A_ty type, A_dec funcdec, A_compStmt compst) {
     p->u.funcc.compst=compst;
     return p;
 }
-A_def A_LocalDef(A_pos pos, S_symbol dec, A_decList declist) {
+A_def A_LocalDef(A_pos pos, A_ty dec, A_decList declist) {
     A_def p = checked_malloc(sizeof(*p));
     p->kind=A_localDef;
     p->pos=pos;
@@ -180,7 +187,7 @@ A_defList A_DefList(A_def head, A_defList tail) {
     return p;
 }
 
-A_stmt ExpStmt(A_pos pos, A_exp exp) {
+A_stmt A_ExpStmt(A_pos pos, A_exp exp) {
     A_stmt p = checked_malloc(sizeof(*p));
     p->kind=A_expStmt;
     p->pos=pos;
@@ -223,6 +230,13 @@ A_stmt A_ContinueStmt(A_pos pos) {
     p->pos=pos;
     return p;
 }
+A_stmt A_ComppStmt(A_pos pos, A_compStmt comp) {
+    A_stmt p = checked_malloc(sizeof(*p));
+    p->kind=A_comppStmt;
+    p->pos=pos;
+    p->u.compp.comp=comp;
+    return p;
+}
 
 A_stmtList A_StmtList(A_stmt head, A_stmtList tail) {
     A_stmtList p = checked_malloc(sizeof(*p));
@@ -239,11 +253,11 @@ A_compStmt A_CompStmt(A_pos pos, A_decList declist, A_stmtList stmtlist) {
     return p;
 }
 
-A_paramDec A_ParamDec(A_pos pos, A_ty type, A_dec dec) {
+A_paramDec A_ParamDec(A_pos pos, A_ty type, A_var var) {
     A_paramDec p = checked_malloc(sizeof(*p));
     p->pos=pos;
     p->type=type;
-    p->dec=dec;
+    p->var=var;
     return p;
 }
 

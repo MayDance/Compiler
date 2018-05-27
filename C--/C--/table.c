@@ -5,7 +5,7 @@
 //  Created by Starblo Hong on 20/05/2018.
 //  Copyright © 2018 Starblo Hong. All rights reserved.
 //
-
+ 
 // table.c - Functions to manipulate generic tables.
 #include <stdio.h>
 #include "table.h"

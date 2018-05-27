@@ -36,6 +36,18 @@ typedef struct A_paramList_ *A_paramList;
 typedef enum {A_andOP, A_orOP, A_plusOp, A_minusOp, A_timesOp, A_divideOp} A_oper;
 typedef enum {A_INT, A_FLOAT, A_CHAR} A_type;
 
+//variable
+struct A_var_ {
+    enum {A_simpleVar, A_arrayVar} kind;
+    A_pos pos;
+    union {
+        S_symbol simplee;
+        struct {
+            A_var simple;
+            int size;
+        } arrayy;
+    } u;
+};
 
 // expression
 struct A_exp_ {
@@ -74,7 +86,7 @@ struct A_exp_ {
 
 // declaraction
 struct A_dec_ {
-    enum {A_funcDec, A_varDec, A_arrayDec} kind;
+    enum {A_funcDec, A_varDec} kind;
     A_pos pos;
     union {
         struct {
@@ -83,15 +95,10 @@ struct A_dec_ {
         } funcc;
         // escape may change after the initial declaration
         struct {
-            S_symbol var;
+            A_var var;
             A_exp init;
             bool escape;
         } varr;
-        struct {
-            S_symbol arr;
-            int size;
-            bool escape;
-        } arrayy;
     } u;
 };
 
@@ -141,7 +148,7 @@ struct A_def_ {
             A_compStmt compst;
         } funcc;
         struct {
-            S_symbol dec;
+            A_ty dec;
             A_decList declist;
         } loacll;
     } u;
@@ -153,7 +160,7 @@ struct A_defList_ {
 };
 
 struct A_stmt_ {
-    enum {A_expStmt, A_retnStmt, A_ifStmt, A_whileStmt, A_breakStmt, A_continueStmt} kind;
+    enum {A_expStmt, A_retnStmt, A_ifStmt, A_whileStmt, A_breakStmt, A_continueStmt, A_comppStmt} kind;
     A_pos pos;
     union {
         struct {
@@ -172,6 +179,9 @@ struct A_stmt_ {
         }whilee;
         // break
         // continue
+        struct {
+            A_compStmt comp;
+        } compp;
     } u;
 };
 struct A_stmtList_ {
@@ -187,7 +197,7 @@ struct A_compStmt_ {
 struct A_paramDec_ {
     A_pos pos;
     A_ty type;
-    A_dec dec;
+    A_var var;
 };
 
 struct A_paramList_ {
@@ -196,6 +206,8 @@ struct A_paramList_ {
 };
 
 // Function Prototypes
+A_var A_SimpleVar(A_pos pos, S_symbol idd);
+A_var A_ArrayVar(A_pos pos, A_var var, int size);
 A_exp A_FuncExp(A_pos pos, S_symbol idd, A_expList args);
 A_exp A_StruExp(A_pos pos, A_exp exp, S_symbol stru);
 A_exp A_SimpleExp(A_pos pos, S_symbol idd);
@@ -208,8 +220,7 @@ A_exp A_NotExp(A_pos pos, A_exp exp);
 A_exp A_ArrayExp(A_pos pos, A_exp exp1, A_exp exp2);
 
 A_dec A_FuncDec(A_pos pos, S_symbol func, A_paramList body);
-A_dec A_VarDec(A_pos pos, S_symbol var, A_exp init);
-A_dec A_ArrayDec(A_pos pos, S_symbol arr, int size);
+A_dec A_VarDec(A_pos pos, A_var var, A_exp init);
 
 A_ty A_SimpleTy(A_pos pos, A_type type);
 A_ty A_StruTy(A_pos pos, S_symbol tag, A_defList deflist);
@@ -220,7 +231,7 @@ A_decList A_DecList(A_dec head, A_decList tail);
 A_def A_GlobalDef(A_pos pos, A_ty type, A_decList declist);
 A_def A_StructDef(A_pos pos, A_ty type);
 A_def A_FuncDef(A_pos pos, A_ty type, A_dec funcdec, A_compStmt compst);
-A_def A_LocalDef(A_pos pos, S_symbol dec, A_decList declist);
+A_def A_LocalDef(A_pos pos, A_ty dec, A_decList declist);
 
 A_defList A_DefList(A_def head, A_defList tail);
 
@@ -230,11 +241,13 @@ A_stmt A_IfStmt(A_pos pos, A_exp condition, A_stmt iff, A_stmt elsee);
 A_stmt A_WhileStmt(A_pos pos, A_exp condition, A_stmt stmt);
 A_stmt A_BreakStmt(A_pos pos);
 A_stmt A_ContinueStmt(A_pos pos);
+A_stmt A_ComppStmt(A_pos pos, A_compStmt comp);
 
 A_stmtList A_StmtList(A_stmt head, A_stmtList tail);
 A_compStmt A_CompStmt(A_pos pos, A_decList declist, A_stmtList stmtlist);
 
-A_paramDec A_ParamDec(A_pos pos, A_ty type, A_dec dec);
+A_paramDec A_ParamDec(A_pos pos, A_ty type, A_var var);
 A_paramList A_ParamList(A_paramDec head, A_paramList tail);
 
 #endif
+ 

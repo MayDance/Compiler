@@ -13,7 +13,12 @@
 #include "symbol.h"
 #include "absyn.h"
 #include "errormsg.h"
+#include "prabsyn.h"
 
-A_exp parse(string fname);
+extern int yyparse(void);
+extern A_defList absyn_root;
+
+A_defList parse(string fname);
 
 #endif
+ 

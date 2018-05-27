@@ -4,13 +4,14 @@
 #include "errormsg.h"
 #include "absyn.h"
 
-int yylex(void); /* function prototype */
+extern int yylex(void); // function prototype 
 
 A_defList absyn_root;
 
 void yyerror(char *s) {
         EM_error(EM_tokPos, "%s", s);
 }
+
 %}
 
 %union {
@@ -21,6 +22,7 @@ void yyerror(char *s) {
     char cval;
     S_symbol sym;
 
+    A_var var;
     A_exp exp;
     A_dec dec;
     A_ty ty;
@@ -53,12 +55,12 @@ LP RP LB RB LC RC IF ELSE WHILE FOR BREAK CONTINUE STRUCT RETURN VOID TYPEDEF
 %right NOT
 %left DOT LP RP LB RB LC RC
 
-
 // declare non-terminals
-%type <sym> Opttag
+%type <sym> Opttag Id
+%type <var> Var
 %type <exp> Exp
 %type <expList> Args
-%type <dec> Dec Funcdec Vardec
+%type <dec> Dec Funcdec
 %type <decList> Declist Program
 %type <ty> Stru Specifier
 %type <def> Def
@@ -95,27 +97,27 @@ Specifier:       INT    {$$=A_SimpleTy(EM_tokPos, A_INT);}
                 ;
 
 Stru:    STRUCT Opttag LC Deflist RC    {$$=A_StruTy(EM_tokPos, $2, $4);}
-        |STRUCT ID                      {$$=A_StruTy(EM_tokPos, $2, NULL);}
+        |STRUCT Id                      {$$=A_StruTy(EM_tokPos, $2, NULL);}
         ;
 
-Opttag:  ID     {$$=$1;}
+Opttag:  Id     {$$=$1;}
         |       {$$=NULL;}
         ;
 
 //declarators
-Vardec:  ID                     {$$=A_VarDec(EM_tokPos, $1, NULL);}
-        |Vardec LB INT RB       {$$=A_ArrayDec(EM_tokPos, $1, $3);}
+Var:     Id                     {$$=A_SimpleVar(EM_tokPos, $1);}
+        |Var LB INT RB       {$$=A_ArrayVar(EM_tokPos, $1, $3);}
         ;
 
-Funcdec:         ID LP Paramlist RP       {$$=A_FuncDec(EM_tokPos, $1, $3);}
-                |ID LP RP               {$$=A_FuncDec(EM_tokPos, $1, NULL);}
+Funcdec:         Id LP Paramlist RP       {$$=A_FuncDec(EM_tokPos, $1, $3);}
+                |Id LP RP               {$$=A_FuncDec(EM_tokPos, $1, NULL);}
                 ;
 
 Paramlist:       Paramdec COMMA Paramlist       {$$=A_ParamList($1, $3);}
                 |Paramdec                       {$$=A_ParamList($1, NULL);}
                 ;
 
-Paramdec:        Specifier Vardec       {$$=A_ParamDec(EM_tokPos, $1, $2);}
+Paramdec:        Specifier Var       {$$=A_ParamDec(EM_tokPos, $1, $2);}
                 ;
 
 // statements
@@ -127,7 +129,7 @@ Stmtlist:    Stmt Stmtlist      {$$=A_StmtList($1, $2);}
             ;
 
 Stmt:    Exp SEMICOLON                  {$$=A_ExpStmt(EM_tokPos, $1);}
-        |Compst                         {$$=$1;}
+        |Compst                         {$$=A_ComppStmt(EM_tokPos, $1);}
         |RETURN Exp SEMICOLON           {$$=A_RetnStmt(EM_tokPos, $2);}
         |IF LP Exp RP Stmt              {$$=A_IfStmt(EM_tokPos, $3, $5, NULL);}
         |IF LP Exp RP Stmt ELSE Stmt    {$$=A_IfStmt(EM_tokPos, $3, $5, $7);}
@@ -148,8 +150,11 @@ Declist:         Dec                    {$$=A_DecList($1, NULL);}
                 |Dec COMMA Declist      {$$=A_DecList($1, $3);}
                 ;
 
-Dec:     Vardec                 {$$=$1;}
-        |Vardec ASSIGN Exp      {$$=A_VarDec(EM_tokPos, $1, $3);}
+Dec:     Var                 {$$=A_VarDec(EM_tokPos, $1, NULL);}
+        |Var ASSIGN Exp      {$$=A_VarDec(EM_tokPos, $1, $3);}
+
+Id:      ID     {$$=S_Symbol($1);}
+        ;
 
 // expressions
 Exp:     Exp ASSIGN Exp {$$=A_AssignExp(EM_tokPos, $1, $3);}
@@ -163,10 +168,10 @@ Exp:     Exp ASSIGN Exp {$$=A_AssignExp(EM_tokPos, $1, $3);}
         |LP Exp RP      {$$=$2;}
         |MINUS Exp      {$$=A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), $2);}
         |NOT Exp        {$$=A_NotExp(EM_tokPos, $2);}
-        |ID LP Args RP  {$$=A_FuncExp(EM_tokPos, $1, $3);}
+        |Id LP Args RP  {$$=A_FuncExp(EM_tokPos, $1, $3);}
         |Exp LB Exp RB  {$$=A_ArrayExp(EM_tokPos, $1, $3);}
-        |Exp DOT ID     {$$=A_StruExp(EM_tokPos, $1, $3);}
-        |ID             {$$=A_SimpleExp(EM_tokPos, $1);}
+        |Exp DOT Id     {$$=A_StruExp(EM_tokPos, $1, $3);}
+        |Id             {$$=A_SimpleExp(EM_tokPos, $1);}
         |INT            {$$=A_IntExp(EM_tokPos, $1);}
         |FLOAT          {$$=A_FloatExp(EM_tokPos, $1);}
         |CHAR           {$$=A_IntExp(EM_tokPos, $1);}

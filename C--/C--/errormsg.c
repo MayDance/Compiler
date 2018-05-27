@@ -44,22 +44,31 @@ void EM_error(int pos, char *message,...) {
     
     
     anyErrors=TRUE;
-    while (lines && lines->i >= pos)
-    {lines=lines->rest; num--;}
+    while (lines && lines->i >= pos) {
+        lines=lines->rest;
+        num--;
+    }
     
-    if (fileName) fprintf(stderr,"%s:",fileName);
-    if (lines) fprintf(stderr,"%d.%d: ", num, pos-lines->i);
+    if (fileName)
+        fprintf(stderr,"%s:",fileName);
+    if (lines)
+        fprintf(stderr,"%d.%d: ", num, pos-lines->i);
     va_start(ap,message);
     vfprintf(stderr, message, ap);
     va_end(ap);
     fprintf(stderr,"\n");
     
 }
-
+ 
 void EM_reset(string fname) {
-    anyErrors=FALSE; fileName=fname; lineNum=1;
+    anyErrors=FALSE;
+    fileName=fname;
+    lineNum=1;
     linePos=intList(0,NULL);
     yyin = fopen(fname,"r");
-    if (!yyin) {EM_error(0,"cannot open"); exit(1);}
+    if (!yyin) {
+        EM_error(0,"cannot open");
+        exit(1);
+    }
 }
 
