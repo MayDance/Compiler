@@ -22,10 +22,11 @@ A_defList parse(string fname) {
 int main(int argc, char **argv) {
     A_defList absyn_root;
     FILE *out = stdout;
+    
     if (argc==2) {
         absyn_root = parse(argv[1]);
         if (!absyn_root) {
-            fprintf(out, "testcase is empty!");
+            fprintf(out, "testcase is empty!\n");
             return 1;
         }
         pr_defList(out, absyn_root, 0); // print absyn data structure

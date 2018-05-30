@@ -42,13 +42,12 @@ void EM_error(int pos, char *message,...) {
     IntList lines = linePos;
     int num=lineNum;
     
-    
+    printf("erroraccur\n");
     anyErrors=TRUE;
     while (lines && lines->i >= pos) {
         lines=lines->rest;
         num--;
     }
-    
     if (fileName)
         fprintf(stderr,"%s:",fileName);
     if (lines)
@@ -57,7 +56,7 @@ void EM_error(int pos, char *message,...) {
     vfprintf(stderr, message, ap);
     va_end(ap);
     fprintf(stderr,"\n");
-    
+    printf("erroraccured\n");
 }
  
 void EM_reset(string fname) {

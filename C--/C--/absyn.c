@@ -103,21 +103,12 @@ A_exp A_ArrayExp(A_pos pos, A_exp exp1, A_exp exp2) {
     return p;
 }
 
-A_dec A_FuncDec(A_pos pos, S_symbol func, A_paramList body) {
+A_dec A_Dec(A_pos pos, A_var var, A_exp init) {
     A_dec p = checked_malloc(sizeof(*p));
-    p->kind=A_funcDec;
     p->pos=pos;
-    p->u.funcc.func=func;
-    p->u.funcc.body=body;
-    return p;
-}
-A_dec A_VarDec(A_pos pos, A_var var, A_exp init) {
-    A_dec p = checked_malloc(sizeof(*p));
-    p->kind=A_varDec;
-    p->pos=pos;
-    p->u.varr.var=var;
-    p->u.varr.init=init;
-    p->u.varr.escape=TRUE;
+    p->var=var;
+    p->init=init;
+    p->escape=TRUE;
     return p;
 }
 
@@ -136,6 +127,20 @@ A_ty A_StruTy(A_pos pos, S_symbol tag, A_defList deflist) {
     return p;
 }
 
+A_funcDec A_FuncDec(A_pos pos, S_symbol func, A_paramList body) {
+    A_funcDec p = checked_malloc(sizeof(*p));
+    p->pos=pos;
+    p->func=func;
+    p->body=body;
+    return p;
+}
+
+A_varList A_VarList(A_var head, A_varList tail) {
+    A_varList p = checked_malloc(sizeof(*p));
+    p->head=head;
+    p->tail=tail;
+    return p;
+}
 A_expList A_ExpList(A_exp head, A_expList tail) {
     A_expList p = checked_malloc(sizeof(*p));
     p->head=head;
@@ -148,12 +153,12 @@ A_decList A_DecList(A_dec head, A_decList tail) {
     p->tail=tail;
     return p;
 }
-A_def A_GlobalDef(A_pos pos, A_ty type, A_decList declist) {
+A_def A_GlobalDef(A_pos pos, A_ty type, A_varList varlist) {
     A_def p = checked_malloc(sizeof(*p));
     p->kind=A_globalDef;
     p->pos=pos;
     p->u.globall.type=type;
-    p->u.globall.declist=declist;
+    p->u.globall.varlist=varlist;
     return p;
 }
 A_def A_StructDef(A_pos pos, A_ty type) {
@@ -163,9 +168,9 @@ A_def A_StructDef(A_pos pos, A_ty type) {
     p->u.structt.type=type;
     return p;
 }
-A_def A_FuncDef(A_pos pos, A_ty type, A_dec funcdec, A_compStmt compst) {
+A_def A_FuncDef(A_pos pos, A_ty type, A_funcDec funcdec, A_compStmt compst) {
     A_def p = checked_malloc(sizeof(*p));
-    p->kind=A_funcDec;
+    p->kind=A_funcDef;
     p->pos=pos;
     p->u.funcc.type=type;
     p->u.funcc.funcdec=funcdec;
@@ -245,10 +250,10 @@ A_stmtList A_StmtList(A_stmt head, A_stmtList tail) {
     return p;
 }
 
-A_compStmt A_CompStmt(A_pos pos, A_decList declist, A_stmtList stmtlist) {
+A_compStmt A_CompStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist) {
     A_compStmt p = checked_malloc(sizeof(*p));
     p->pos=pos;
-    p->declist=declist;
+    p->deflist=deflist;
     p->stmtlist=stmtlist;
     return p;
 }

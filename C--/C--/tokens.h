@@ -12,6 +12,8 @@
 typedef union  {
     int pos;
     int ival;
+    float fval;
+    char cval;
     string sval;
 } YYSTYPE;
 extern YYSTYPE yylval;
@@ -32,32 +34,34 @@ extern YYSTYPE yylval;
 # define AND 271    // &&
 # define OR 272 // ||
 # define DOT 273    // .
-# define TYPE 274   // int | float | char
-# define LP 275 // (
-# define RP 276 // )
-# define LB 277 // [
-# define RB 278 // ]
-# define LC 279 // {
-# define RC 280 // }
-# define IF 281 // if
-# define ELSE 282   // else
-# define WHILE 283  // while
-# define FOR 284    // for
-# define BREAK 285  // break
-# define CONTINUE 286   // continue
-# define STRUCT 287 // struct
-# define RETURN 288 // return
-# define VOID 289   // void
-# define TYPEDEF 290    // typedef
-# define CONST 291  // const
-# define DO 292 // do
-# define ENUM 293   // enum
-# define EXTERN 294 // extern
-# define DEFAULT 295    // default
-# define STATIC 296 // static
-# define SWITCH 297 // switch
-# define CASE 298   //case
-# define UNION 299  // union
+# define T_INT 274   // int
+# define T_FLOAT 275   // float
+# define T_CHAR 276   // char
+# define LP 277 // (
+# define RP 278 // )
+# define LB 279 // [
+# define RB 280 // ]
+# define LC 281 // {
+# define RC 282 // }
+# define IF 283 // if
+# define ELSE 284   // else
+# define WHILE 285  // while
+# define FOR 286    // for
+# define BREAK 287  // break
+# define CONTINUE 288   // continue
+# define STRUCT 289 // struct
+# define RETURN 290 // return
+# define VOID 291   // void
+# define TYPEDEF 292    // typedef
+# define CONST 293  // const
+# define DO 294 // do
+# define ENUM 295   // enum
+# define EXTERN 296 // extern
+# define DEFAULT 297    // default
+# define STATIC 298 // static
+# define SWITCH 299 // switch
+# define CASE 300   //case
+# define UNION 301  // union
 
 #endif  //tokens.h
 
