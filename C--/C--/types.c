@@ -8,10 +8,11 @@
 #include "types.h"
 
 static struct Ty_ty_ tyint = { Ty_int };
-static struct Ty_ty_ tyint = { Ty_int };
+static struct Ty_ty_ tyfloat = { Ty_float };
+static struct Ty_ty_ tychar = { Ty_char };
 Ty_ty Ty_Int(void) { return &tyint; }
-Ty_ty Ty_Float(void) { return &tyFloat; }
-Ty_ty Ty_Char(void) { return &tyChar; }
+Ty_ty Ty_Float(void) { return &tyfloat; }
+Ty_ty Ty_Char(void) { return &tychar; }
 
 
 Ty_ty Ty_Struc(Ty_fieldList fields)
