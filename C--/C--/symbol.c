@@ -11,7 +11,8 @@
 #include "symbol.h"
 
 struct S_symbol_ {
-    char name[16];
+    // no more than 32 characters
+    char name[32];
     S_symbol next;
 };
 
