@@ -1,5 +1,7 @@
-/*Author: Zihan Zhao
-  Reference: Textbook Page 81 & 101*/
+//
+//
+//by LBQ
+//Reference: Textbook Page 74-82
 
 typedef struct E_enventry_ * E_enventry;
 
@@ -19,5 +21,5 @@ struct E_enventry_
 E_enventry E_VarEntry(Tr_access access, Ty_ty ty);
 E_enventry E_FunEntry(Tr_level level, Temp_label label, Ty_tyList formals, Ty_ty result);
 
-S_table E_base_tenv(void); /*Ty_ty environment*/
-S_table E_base_venv(void); /*E_enventry environment*/
+S_table E_base_tenv(void); //the basic type environment
+//S_table E_base_venv(void); //the basic function environment 

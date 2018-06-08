@@ -8,13 +8,14 @@
 #ifndef tokens_h
 #define tokens_h
 
+
 //referenced from book
 typedef union  {
     int pos;
     int ival;
     float fval;
     char cval;
-    string sval;
+    //string sval;
 } YYSTYPE;
 extern YYSTYPE yylval;
 

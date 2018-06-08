@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include "parse.h"
 
+extern anyErrors;
+
 // parse source file fname; return abstract syntax data structure
 A_defList parse(string fname) {
     EM_reset(fname);
@@ -20,7 +22,7 @@ A_defList parse(string fname) {
 }
 
 int main(int argc, char **argv) {
-    A_defList absyn_root;
+    //A_defList absyn_root;
     FILE *out = stdout;
     
     if (argc==2) {
@@ -30,6 +32,8 @@ int main(int argc, char **argv) {
             return 1;
         }
         pr_defList(out, absyn_root, 0); // print absyn data structure
+        //fragList = SEM_transProg(absyn_root);
+
         fprintf(out, "\n");
     }
     return 0;
