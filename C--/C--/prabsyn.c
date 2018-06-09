@@ -100,8 +100,11 @@ static void pr_dec(FILE *out, A_dec v, int d) {
     indent(out, d);
     fprintf(out, "Dec(\n");
     pr_var(out, v->var, d+1); fprintf(out, ",\n");
-    pr_exp(out, v->init, d+1); fprintf(out, ",\n");
-    indent(out, d+1); fprintf(out, "%s", v->escape ? "TRUE)" : "FALSE)");
+    if (v->init != NULL) {
+        pr_exp(out, v->init, d+1); fprintf(out, "\n");
+    }
+    indent(out, d+1); fprintf(out, ")\n");
+//    fprintf(out, "%s", v->escape ? "TRUE)" : "FALSE)");
 }
 
 static void pr_ty(FILE *out, A_ty v, int d) {
@@ -145,18 +148,18 @@ static void pr_expList(FILE *out, A_expList v, int d) {
         pr_expList(out, v->tail, d+1);
         fprintf(out, ")");
     }
-    else fprintf(out, "expList()");
+//    else fprintf(out, "expList()");
 }
 
 static void pr_decList(FILE *out, A_decList v, int d) {
     indent(out, d);
     if (v) {
         fprintf(out, "decList(\n");
-        pr_dec(out, v->head, d+1); fprintf(out, ",\n");
+        pr_dec(out, v->head, d+1);
         pr_decList(out, v->tail, d+1);
         fprintf(out, ")");
     }
-    else fprintf(out, "decList()");
+//    else fprintf(out, "decList()");
 }
 
 static void pr_def(FILE *out, A_def v, int d) {
@@ -165,7 +168,7 @@ static void pr_def(FILE *out, A_def v, int d) {
         case A_globalDef:
             fprintf(out, "globalDef(\n");
             pr_ty(out, v->u.globall.type, d+1); fprintf(out, ",\n");
-            pr_varList(out, v->u.globall.varlist, d+1); fprintf(out, ")");
+            pr_decList(out, v->u.globall.declist, d+1); fprintf(out, ")");
             break;
         case A_structDef:
             fprintf(out, "structDef(\n");
@@ -195,7 +198,7 @@ void pr_defList(FILE *out, A_defList v, int d) {
         pr_defList(out, v->tail, d+1);
         fprintf(out, ")");
     }
-    else fprintf(out, "defList()");
+//    else fprintf(out, "defList()");
 }
 
 static void pr_stmt(FILE *out, A_stmt v, int d) {
@@ -221,7 +224,8 @@ static void pr_stmt(FILE *out, A_stmt v, int d) {
             fprintf(out, "continueStmt()");
         case A_comppStmt:
             fprintf(out, "comppStmt(\n");
-            pr_compStmt(out, v->u.compp.comp, d+1); fprintf(out, ")");
+            pr_defList(out, v->u.compp.deflist, d+1); fprintf(out, ")");
+            pr_stmtList(out, v->u.compp.stmtlist, d+1); fprintf(out, ")");
             break;
         default:
             assert(0);
@@ -236,7 +240,7 @@ static void pr_stmtList(FILE *out, A_stmtList v, int d) {
         pr_stmtList(out, v->tail, d+1);
         fprintf(out, ")");
     }
-    else fprintf(out, "decList()");
+//    else fprintf(out, "stmtList()");
 }
 
 static void pr_compStmt(FILE *out, A_compStmt v, int d) {
@@ -261,5 +265,5 @@ static void pr_paramList(FILE *out, A_paramList v, int d) {
         pr_paramList(out, v->tail, d+1);
         fprintf(out, ")");
     }
-    else fprintf(out, "paramList()");
+//    else fprintf(out, "paramList()");
 }

@@ -153,12 +153,12 @@ A_decList A_DecList(A_dec head, A_decList tail) {
     p->tail=tail;
     return p;
 }
-A_def A_GlobalDef(A_pos pos, A_ty type, A_varList varlist) {
+A_def A_GlobalDef(A_pos pos, A_ty type, A_decList declist) {
     A_def p = checked_malloc(sizeof(*p));
     p->kind=A_globalDef;
     p->pos=pos;
     p->u.globall.type=type;
-    p->u.globall.varlist=varlist;
+    p->u.globall.declist=declist;
     return p;
 }
 A_def A_StructDef(A_pos pos, A_ty type) {
@@ -235,11 +235,12 @@ A_stmt A_ContinueStmt(A_pos pos) {
     p->pos=pos;
     return p;
 }
-A_stmt A_ComppStmt(A_pos pos, A_compStmt comp) {
+A_stmt A_ComppStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist) {
     A_stmt p = checked_malloc(sizeof(*p));
     p->kind=A_comppStmt;
     p->pos=pos;
-    p->u.compp.comp=comp;
+    p->u.compp.deflist=deflist;
+    p->u.compp.stmtlist=stmtlist;
     return p;
 }
 

@@ -11,13 +11,18 @@
 #include "symbol.h"
 
 struct S_symbol_ {
-    string name;
+    // no more than 32 characters
+    char name[32];
     S_symbol next;
 };
 
 static S_symbol mksymbol(string name, S_symbol next) {
     S_symbol s=checked_malloc(sizeof(*s));
-    s->name=name;
+    int i = 0;
+    while (name[i] != '\0') {
+        s->name[i] = name[i];
+        i++;
+    }
     s->next=next;
     return s;
 }

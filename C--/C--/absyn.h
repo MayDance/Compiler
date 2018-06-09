@@ -135,7 +135,7 @@ struct A_def_ {
     union {
         struct {
             A_ty type;
-            A_varList varlist;
+            A_decList declist;
         } globall;
         struct {
             A_ty type;
@@ -143,7 +143,7 @@ struct A_def_ {
         struct {
             A_ty type;
             A_funcDec funcdec;
-            A_compStmt compst;
+            A_stmt compst;
         } funcc;
         struct {
             A_ty dec;
@@ -178,7 +178,8 @@ struct A_stmt_ {
         // break
         // continue
         struct {
-            A_compStmt comp;
+            A_defList deflist;
+            A_stmtList stmtlist;
         } compp;
     } u;
 };
@@ -228,7 +229,7 @@ A_varList A_VarList(A_var head, A_varList tail);
 A_expList A_ExpList(A_exp head, A_expList tail);
 A_decList A_DecList(A_dec head, A_decList tail);
 
-A_def A_GlobalDef(A_pos pos, A_ty type, A_varList varlist);
+A_def A_GlobalDef(A_pos pos, A_ty type, A_decList declist);
 A_def A_StructDef(A_pos pos, A_ty type);
 A_def A_FuncDef(A_pos pos, A_ty type, A_funcDec funcdec, A_compStmt compst);
 A_def A_LocalDef(A_pos pos, A_ty dec, A_decList declist);
@@ -241,7 +242,7 @@ A_stmt A_IfStmt(A_pos pos, A_exp condition, A_stmt iff, A_stmt elsee);
 A_stmt A_WhileStmt(A_pos pos, A_exp condition, A_stmt stmt);
 A_stmt A_BreakStmt(A_pos pos);
 A_stmt A_ContinueStmt(A_pos pos);
-A_stmt A_ComppStmt(A_pos pos, A_compStmt comp);
+A_stmt A_ComppStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist);
 
 A_stmtList A_StmtList(A_stmt head, A_stmtList tail);
 A_compStmt A_CompStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist);
