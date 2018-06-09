@@ -89,6 +89,7 @@ ExtDef:  Specifier ExtDeclist SEMICOLON {$$=A_GlobalDef(EM_tokPos, $1, $2);print
         ;
 
 ExtDeclist:      Var                    {$$=A_DecList(A_Dec(EM_tokPos, $1, NULL), NULL);printf("--extdeclistvar\n");}
+                |Var ASSIGN Exp         {$$=A_DecList(A_Dec(EM_tokPos, $1, $3), NULL);printf("--extdeclistvarass\n");}
                 |Var COMMA ExtDeclist   {$$=A_DecList(A_Dec(EM_tokPos, $1, NULL), $3);printf("--extdeclist\n");}
                 ;
 

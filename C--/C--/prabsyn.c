@@ -49,7 +49,7 @@ static void pr_var(FILE *out, A_var v, int d) {
             break;
         case A_arrayVar:
             fprintf(out, "arrayVar(\n");
-            pr_var(out, v->u.arrayy.simple, d+1); fprintf(out, "\n");
+            pr_var(out, v->u.arrayy.simple, d+1);
             indent(out, d+1); fprintf(out, "[%d])", v->u.arrayy.size);
             break;
     }

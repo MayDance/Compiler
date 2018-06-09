@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include "parse.h"
 
-extern anyErrors;
+//extern anyErrors;
 
 // parse source file fname; return abstract syntax data structure
 A_defList parse(string fname) {
@@ -23,7 +23,7 @@ A_defList parse(string fname) {
 }
 
 int main(int argc, char **argv) {
-    //A_defList absyn_root;
+    A_defList absyn_root;
     FILE *out = stdout;
     
     if (argc==2) {

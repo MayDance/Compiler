@@ -1,7 +1,8 @@
-/*
- * temp.h 
- *
- */
+//
+// temp.h
+//
+//
+
 #include <stdio.h>
 
 typedef struct Temp_temp_ *Temp_temp;

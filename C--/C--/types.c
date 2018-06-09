@@ -2,6 +2,9 @@
 //
 //by LBQ
 //Reference: Textbook Page 74-82
+//All types and functions declared in this header file begin with "Ty_"， Linked list types end with "..list"
+//
+
 #include <stdio.h>
 #include "symbol.h"
 #include "errormsg.h"
