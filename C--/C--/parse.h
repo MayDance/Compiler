@@ -9,6 +9,7 @@
 #define parse_h
 // function prototype from parse.c 
 
+// sematic analysis
 #include "util.h"
 #include "symbol.h"
 #include "absyn.h"

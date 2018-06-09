@@ -7,6 +7,7 @@
 //
  
 // table.c - Functions to manipulate generic tables.
+// sematic analysis
 #include <stdio.h>
 #include "table.h"
 

@@ -7,6 +7,7 @@
 //
 
 //errormsg.c - functions used in all phases of the compiler to give error messages about the C-- program.
+// sematic analysis
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>

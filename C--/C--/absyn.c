@@ -8,6 +8,7 @@
  
 // absyn.c - Abstract Syntax Functions. Most functions create an instance of an abstract syntax rule.
 
+// sematic analysis
 #include "absyn.h"  // abstract syntax data structures
 
 A_var A_SimpleVar(A_pos pos, S_symbol idd) {
@@ -135,12 +136,6 @@ A_funcDec A_FuncDec(A_pos pos, S_symbol func, A_paramList body) {
     return p;
 }
 
-A_varList A_VarList(A_var head, A_varList tail) {
-    A_varList p = checked_malloc(sizeof(*p));
-    p->head=head;
-    p->tail=tail;
-    return p;
-}
 A_expList A_ExpList(A_exp head, A_expList tail) {
     A_expList p = checked_malloc(sizeof(*p));
     p->head=head;
@@ -168,7 +163,7 @@ A_def A_StructDef(A_pos pos, A_ty type) {
     p->u.structt.type=type;
     return p;
 }
-A_def A_FuncDef(A_pos pos, A_ty type, A_funcDec funcdec, A_compStmt compst) {
+A_def A_FuncDef(A_pos pos, A_ty type, A_funcDec funcdec, A_stmt compst) {
     A_def p = checked_malloc(sizeof(*p));
     p->kind=A_funcDef;
     p->pos=pos;
@@ -235,7 +230,7 @@ A_stmt A_ContinueStmt(A_pos pos) {
     p->pos=pos;
     return p;
 }
-A_stmt A_ComppStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist) {
+A_stmt A_CompStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist) {
     A_stmt p = checked_malloc(sizeof(*p));
     p->kind=A_comppStmt;
     p->pos=pos;
@@ -251,13 +246,6 @@ A_stmtList A_StmtList(A_stmt head, A_stmtList tail) {
     return p;
 }
 
-A_compStmt A_CompStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist) {
-    A_compStmt p = checked_malloc(sizeof(*p));
-    p->pos=pos;
-    p->deflist=deflist;
-    p->stmtlist=stmtlist;
-    return p;
-}
 
 A_paramDec A_ParamDec(A_pos pos, A_ty type, A_var var) {
     A_paramDec p = checked_malloc(sizeof(*p));

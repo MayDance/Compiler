@@ -103,4 +103,5 @@ comments "/*"[^*]*[*]+([^*/][^*]*[*]+)*[*]*"/"
 "]" {adjust(); printf("==]\n"); return RB;}
 "{" {adjust(); printf("=={\n"); return LC;}
 "}" {adjust(); printf("==}\n"); return RC;}
+
 %%

@@ -7,6 +7,7 @@
 //
  
 // parse.c - Parse source file.
+// sematic analysis
 #include <stdio.h>
 #include <stdlib.h>
 #include "parse.h"

@@ -9,6 +9,7 @@
 #ifndef symbol_h
 #define symbol_h
 
+// sematic analysis
 // symbol.h - Symbols and symbol-tables
 #include "util.h"
 #include "table.h"

@@ -8,6 +8,7 @@
 #ifndef util_h
 #define util_h
 
+// sematic analysis
 #include <assert.h>
 
 typedef char *string;

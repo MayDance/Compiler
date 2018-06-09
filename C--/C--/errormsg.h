@@ -8,6 +8,7 @@
 #ifndef errormsg_h
 #define errormsg_h
 
+// sematic analysis
 #include "util.h"
 #include "errormsg.h"
 

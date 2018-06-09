@@ -8,6 +8,7 @@
 
 // util.c - commonly used utility functions.
 
+// sematic analysis
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

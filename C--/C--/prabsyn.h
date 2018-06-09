@@ -8,6 +8,7 @@
 #ifndef prabsyn_h
 #define prabsyn_h
 
+// sematic analysis
 // function prototype from prabsyn.c
 #include "util.h"
 #include "symbol.h" // symbol table data structures

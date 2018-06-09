@@ -11,6 +11,7 @@
 #ifndef absyn_h
 #define absyn_h
 
+// sematic analysis
 #include "util.h"
 #include "symbol.h" // symbol table data structures
 
@@ -22,7 +23,6 @@ typedef struct A_dec_ *A_dec;   // declaraction
 typedef struct A_ty_ *A_ty; // type
 
 typedef struct A_funcDec_ *A_funcDec;
-typedef struct A_varList_ *A_varList;
 typedef struct A_expList_ *A_expList;
 typedef struct A_decList_ *A_decList;
 typedef struct A_def_ *A_def;   // definition
@@ -116,10 +116,6 @@ struct A_funcDec_ {
 };
 
 // Linked lists and nodes of lists
-struct A_varList_ {
-    A_var head;
-    A_varList tail;
-};
 struct A_expList_ {
     A_exp head;
     A_expList tail;
@@ -225,13 +221,12 @@ A_ty A_StruTy(A_pos pos, S_symbol tag, A_defList deflist);
 
 A_funcDec A_FuncDec(A_pos pos, S_symbol func, A_paramList body);
 
-A_varList A_VarList(A_var head, A_varList tail);
 A_expList A_ExpList(A_exp head, A_expList tail);
 A_decList A_DecList(A_dec head, A_decList tail);
 
 A_def A_GlobalDef(A_pos pos, A_ty type, A_decList declist);
 A_def A_StructDef(A_pos pos, A_ty type);
-A_def A_FuncDef(A_pos pos, A_ty type, A_funcDec funcdec, A_compStmt compst);
+A_def A_FuncDef(A_pos pos, A_ty type, A_funcDec funcdec, A_stmt compst);
 A_def A_LocalDef(A_pos pos, A_ty dec, A_decList declist);
 
 A_defList A_DefList(A_def head, A_defList tail);
@@ -242,10 +237,9 @@ A_stmt A_IfStmt(A_pos pos, A_exp condition, A_stmt iff, A_stmt elsee);
 A_stmt A_WhileStmt(A_pos pos, A_exp condition, A_stmt stmt);
 A_stmt A_BreakStmt(A_pos pos);
 A_stmt A_ContinueStmt(A_pos pos);
-A_stmt A_ComppStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist);
+A_stmt A_CompStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist);
 
 A_stmtList A_StmtList(A_stmt head, A_stmtList tail);
-A_compStmt A_CompStmt(A_pos pos, A_defList deflist, A_stmtList stmtlist);
 
 A_paramDec A_ParamDec(A_pos pos, A_ty type, A_var var);
 A_paramList A_ParamList(A_paramDec head, A_paramList tail);

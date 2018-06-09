@@ -29,7 +29,6 @@ void yyerror(char *s) {
     A_ty ty;
 
     A_funcDec funcDec;
-    A_varList varList;
     A_expList expList;
     A_decList decList;
     A_def def;
@@ -136,7 +135,7 @@ Stmtlist:    Stmt Stmtlist      {$$=A_StmtList($1, $2);printf("--stmtlist\n");}
             ;
 
 Stmt:    Exp SEMICOLON                  {$$=A_ExpStmt(EM_tokPos, $1);printf("--expstmt\n");}
-        |Compst                         {$$=A_ComppStmt(EM_tokPos, $1);printf("--comppstmtn");}
+        |Compst                         {$$=$1;printf("--comppstmt\n");}
         |RETURN Exp SEMICOLON           {$$=A_RetnStmt(EM_tokPos, $2);printf("--retnstmt\n");}
         |IF LP Exp RP Stmt              {$$=A_IfStmt(EM_tokPos, $3, $5, NULL);printf("--ifstmt\n");}
         |IF LP Exp RP Stmt ELSE Stmt    {$$=A_IfStmt(EM_tokPos, $3, $5, $7);printf("--ifelsestmt\n");}
@@ -164,24 +163,25 @@ Id:      ID      {$$=S_Symbol($1);}
         ;
 
 // expressions
-Exp:     Exp ASSIGN Exp {$$=A_AssignExp(EM_tokPos, $1, $3);printf("--exp\n");}
-        |Exp AND Exp    {$$=A_OpExp(EM_tokPos, A_andOP, $1, $3);printf("--exp\n");}
-        |Exp OR Exp     {$$=A_OpExp(EM_tokPos, A_orOP, $1, $3);printf("--exp\n");}
-        |Exp REL Exp    {$$=A_OpExp(EM_tokPos, REL, $1, $3);printf("--exp\n");}
-        |Exp PLUS Exp   {$$=A_OpExp(EM_tokPos, A_plusOp, $1, $3);printf("--exp\n");}
-        |Exp MINUS Exp  {$$=A_OpExp(EM_tokPos, A_minusOp, $1, $3);printf("--exp\n");}
-        |Exp TIMES Exp  {$$=A_OpExp(EM_tokPos, A_timesOp, $1, $3);printf("--exp\n");}
-        |Exp DIVIDE Exp {$$=A_OpExp(EM_tokPos, A_divideOp, $1, $3);printf("--exp\n");}
-        |LP Exp RP      {$$=$2;printf("--exp\n");}
-        |MINUS Exp      {$$=A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), $2);printf("--exp\n");}
-        |NOT Exp        {$$=A_NotExp(EM_tokPos, $2);printf("--exp\n");}
-        |Id LP Args RP  {$$=A_FuncExp(EM_tokPos, $1, $3);printf("--exp\n");}
-        |Exp LB Exp RB  {$$=A_ArrayExp(EM_tokPos, $1, $3);printf("--exp\n");}
-        |Exp DOT Id     {$$=A_StruExp(EM_tokPos, $1, $3);printf("--exp\n");}
-        |Id             {$$=A_SimpleExp(EM_tokPos, $1);printf("--exp\n");}
-        |INT            {$$=A_IntExp(EM_tokPos, $1);printf("--exp\n");}
-        |FLOAT          {$$=A_FloatExp(EM_tokPos, $1);printf("--exp\n");}
-        |CHAR           {$$=A_IntExp(EM_tokPos, $1);printf("--exp\n");}
+Exp:     Exp ASSIGN Exp {$$=A_AssignExp(EM_tokPos, $1, $3);printf("--as\n");}
+        |Exp AND Exp    {$$=A_OpExp(EM_tokPos, A_andOP, $1, $3);printf("--\n");}
+        |Exp OR Exp     {$$=A_OpExp(EM_tokPos, A_orOP, $1, $3);printf("--\n");}
+        |Exp REL Exp    {$$=A_OpExp(EM_tokPos, REL, $1, $3);printf("--\n");}
+        |Exp PLUS Exp   {$$=A_OpExp(EM_tokPos, A_plusOp, $1, $3);printf("--\n");}
+        |Exp MINUS Exp  {$$=A_OpExp(EM_tokPos, A_minusOp, $1, $3);printf("--\n");}
+        |Exp TIMES Exp  {$$=A_OpExp(EM_tokPos, A_timesOp, $1, $3);printf("--\n");}
+        |Exp DIVIDE Exp {$$=A_OpExp(EM_tokPos, A_divideOp, $1, $3);printf("--\n");}
+        |LP Exp RP      {$$=$2;printf("--\n");}
+        |MINUS Exp      {$$=A_OpExp(EM_tokPos, A_minusOp, A_IntExp(EM_tokPos, 0), $2);printf("--\n");}
+        |NOT Exp        {$$=A_NotExp(EM_tokPos, $2);printf("--\n");}
+        |Id LP Args RP  {$$=A_FuncExp(EM_tokPos, $1, $3);printf("--\n");}
+        |Id LP RP       {$$=A_FuncExp(EM_tokPos, $1, NULL);}
+        |Exp LB Exp RB  {$$=A_ArrayExp(EM_tokPos, $1, $3);printf("--\n");}
+        |Exp DOT Id     {$$=A_StruExp(EM_tokPos, $1, $3);printf("--\n");}
+        |Id             {$$=A_SimpleExp(EM_tokPos, $1);printf("--idexp\n");}
+        |INT            {$$=A_IntExp(EM_tokPos, $1);printf("-------------------------intexp%d\n", $1);}
+        |FLOAT          {$$=A_FloatExp(EM_tokPos, $1);printf("--\n");}
+        |CHAR           {$$=A_IntExp(EM_tokPos, $1);printf("--\n");}
 
 Args:    Exp COMMA Args {$$=A_ExpList($1, $3);printf("--args\n");}
         |Exp            {$$=A_ExpList($1, NULL);printf("--args\n");}
