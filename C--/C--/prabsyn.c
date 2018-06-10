@@ -16,13 +16,11 @@ static void pr_var(FILE *out, A_var v, int d);
 static void pr_dec(FILE *out, A_dec v, int d);
 static void pr_ty(FILE *out, A_ty v, int d);
 static void pr_exp(FILE *out, A_exp v, int d);
-static void pr_funcDec(FILE *out, A_funcDec v, int d);
 static void pr_expList(FILE *out, A_expList v, int d);
 static void pr_decList(FILE *out, A_decList v, int d);
 static void pr_def(FILE *out, A_def v, int d);
 static void pr_stmt(FILE *out, A_stmt v, int d);
 static void pr_stmtList(FILE *out, A_stmtList v, int d);
-static void pr_compStmt(FILE *out, A_compStmt v, int d);
 static void pr_paramList(FILE *out, A_paramList v, int d);
 
 static void indent(FILE *out, int d) {
@@ -99,12 +97,22 @@ static void pr_exp(FILE *out, A_exp v, int d) {
 
 static void pr_dec(FILE *out, A_dec v, int d) {
     indent(out, d);
-    fprintf(out, "Dec(\n");
-    pr_var(out, v->var, d+1); fprintf(out, ",\n");
-    if (v->init != NULL) {
-        pr_exp(out, v->init, d+1); fprintf(out, "\n");
+    switch (v->kind) {
+        case A_simpleDec:
+            fprintf(out, "simpleDec(\n");
+            pr_var(out, v->u.simpp.var, d+1); fprintf(out, ",\n");
+            if (v->u.simpp.init != NULL) {
+                pr_exp(out, v->u.simpp.init, d+1); fprintf(out, "\n");
+            }
+            indent(out, d+1); fprintf(out, ")\n");
+            break;
+        case A_funcDec:
+            fprintf(out, "funcDec(%s\n", S_name(v->u.funcc.func));
+            pr_paramList(out, v->u.funcc.body, d+1); fprintf(out, ")");
+            break;
+        default:
+            assert(0);
     }
-    indent(out, d+1); fprintf(out, ")\n");
 //    fprintf(out, "%s", v->escape ? "TRUE)" : "FALSE)");
 }
 
@@ -122,12 +130,6 @@ static void pr_ty(FILE *out, A_ty v, int d) {
         default:
             assert(0);
     }
-}
-
-static void pr_funcDec(FILE *out, A_funcDec v, int d) {
-    indent(out, d);
-    fprintf(out, "funcDec(%s\n", S_name(v->func));
-    pr_paramList(out, v->body, d+1); fprintf(out, ")");
 }
 
 static void pr_expList(FILE *out, A_expList v, int d) {
@@ -169,7 +171,7 @@ static void pr_def(FILE *out, A_def v, int d) {
         case A_funcDef:
             fprintf(out, "funcDef(\n");
             pr_ty(out, v->u.funcc.type, d+1); fprintf(out, ",\n");
-            pr_funcDec(out, v->u.funcc.funcdec, d+1); fprintf(out, ",\n");
+            pr_dec(out, v->u.funcc.funcdec, d+1); fprintf(out, ",\n");
             pr_stmt(out, v->u.funcc.compst, d+1); fprintf(out, ")");
             break;
         case A_localDef:
@@ -189,7 +191,7 @@ void pr_defList(FILE *out, A_defList v, int d) {
         pr_def(out, v->head, d+1);
         if (v->tail)
             pr_defList(out, v->tail, d+1);
-        indent(out, d); fprintf(out, ")");
+        fprintf(out, ")");
     }
 //    else fprintf(out, "defList()");
 }
@@ -239,7 +241,7 @@ static void pr_stmtList(FILE *out, A_stmtList v, int d) {
         pr_stmt(out, v->head, d+1);
         if (v->tail)
             pr_stmtList(out, v->tail, d+1);
-        indent(out, d); fprintf(out, ")");
+        fprintf(out, ")");
     }
 //    else fprintf(out, "stmtList()");
 }
@@ -258,7 +260,7 @@ static void pr_paramList(FILE *out, A_paramList v, int d) {
         pr_paramDec(out, v->head, d+1);
         if (v->tail)
             pr_paramList(out, v->tail, d+1);
-        indent(out, d); fprintf(out, ")");
+        fprintf(out, ")");
     }
 //    else fprintf(out, "paramList()");
 }

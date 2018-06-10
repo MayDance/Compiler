@@ -104,12 +104,22 @@ A_exp A_ArrayExp(A_pos pos, A_exp exp1, A_exp exp2) {
     return p;
 }
 
-A_dec A_Dec(A_pos pos, A_var var, A_exp init) {
+A_dec A_SimpleDec(A_pos pos, A_var var, A_exp init) {
     A_dec p = checked_malloc(sizeof(*p));
+    p->kind=A_simpleDec;
     p->pos=pos;
-    p->var=var;
-    p->init=init;
-    p->escape=TRUE;
+    p->u.simpp.var=var;
+    p->u.simpp.init=init;
+    p->u.simpp.escape=TRUE;
+    return p;
+}
+
+A_dec A_FuncDec(A_pos pos, S_symbol func, A_paramList body) {
+    A_dec p = checked_malloc(sizeof(*p));
+    p->kind=A_funcDec;
+    p->pos=pos;
+    p->u.funcc.func=func;
+    p->u.funcc.body=body;
     return p;
 }
 
@@ -125,14 +135,6 @@ A_ty A_StruTy(A_pos pos, S_symbol tag, A_defList deflist) {
     p->kind=A_struTy;
     p->u.structt.tag=tag;
     p->u.structt.deflist=deflist;
-    return p;
-}
-
-A_funcDec A_FuncDec(A_pos pos, S_symbol func, A_paramList body) {
-    A_funcDec p = checked_malloc(sizeof(*p));
-    p->pos=pos;
-    p->func=func;
-    p->body=body;
     return p;
 }
 
@@ -163,7 +165,7 @@ A_def A_StructDef(A_pos pos, A_ty type) {
     p->u.structt.type=type;
     return p;
 }
-A_def A_FuncDef(A_pos pos, A_ty type, A_funcDec funcdec, A_stmt compst) {
+A_def A_FuncDef(A_pos pos, A_ty type, A_dec funcdec, A_stmt compst) {
     A_def p = checked_malloc(sizeof(*p));
     p->kind=A_funcDef;
     p->pos=pos;

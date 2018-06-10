@@ -22,7 +22,6 @@ typedef struct A_exp_ *A_exp;   // expression
 typedef struct A_dec_ *A_dec;   // declaraction
 typedef struct A_ty_ *A_ty; // type
 
-typedef struct A_funcDec_ *A_funcDec;
 typedef struct A_expList_ *A_expList;
 typedef struct A_decList_ *A_decList;
 typedef struct A_def_ *A_def;   // definition
@@ -87,11 +86,20 @@ struct A_exp_ {
 
 // declaraction
 struct A_dec_ {
+    enum {A_simpleDec, A_funcDec} kind;
     A_pos pos;
     // escape may change after the initial declaration
-    A_var var;
-    A_exp init;
-    bool escape;
+    union u {
+        struct {
+            A_var var;
+            A_exp init;
+            bool escape;
+        } simpp;
+        struct {
+            S_symbol func;
+            A_paramList body;
+        } funcc;
+    } u;
 };
 
 // types
@@ -107,12 +115,6 @@ struct A_ty_ {
             A_defList deflist;
         } structt;
     } u;
-};
-
-struct A_funcDec_ {
-    A_pos pos;
-    S_symbol func;
-    A_paramList body;
 };
 
 // Linked lists and nodes of lists
@@ -138,7 +140,7 @@ struct A_def_ {
         } structt;
         struct {
             A_ty type;
-            A_funcDec funcdec;
+            A_dec funcdec;
             A_stmt compst;
         } funcc;
         struct {
@@ -203,6 +205,7 @@ struct A_paramList_ {
 // Function Prototypes
 A_var A_SimpleVar(A_pos pos, S_symbol idd);
 A_var A_ArrayVar(A_pos pos, A_var var, int size);
+
 A_exp A_FuncExp(A_pos pos, S_symbol idd, A_expList args);
 A_exp A_StruExp(A_pos pos, A_exp exp, S_symbol stru);
 A_exp A_SimpleExp(A_pos pos, S_symbol idd);
@@ -214,19 +217,19 @@ A_exp A_AssignExp(A_pos pos, A_exp left, A_exp right);
 A_exp A_NotExp(A_pos pos, A_exp exp);
 A_exp A_ArrayExp(A_pos pos, A_exp exp1, A_exp exp2);
 
-A_dec A_Dec(A_pos pos, A_var var, A_exp init);
+A_dec A_SimpleDec(A_pos pos, A_var var, A_exp init);
+A_dec A_FuncDec(A_pos pos, S_symbol func, A_paramList body);
 
 A_ty A_SimpleTy(A_pos pos, A_type type);
 A_ty A_StruTy(A_pos pos, S_symbol tag, A_defList deflist);
 
-A_funcDec A_FuncDec(A_pos pos, S_symbol func, A_paramList body);
 
 A_expList A_ExpList(A_exp head, A_expList tail);
 A_decList A_DecList(A_dec head, A_decList tail);
 
 A_def A_GlobalDef(A_pos pos, A_ty type, A_decList declist);
 A_def A_StructDef(A_pos pos, A_ty type);
-A_def A_FuncDef(A_pos pos, A_ty type, A_funcDec funcdec, A_stmt compst);
+A_def A_FuncDef(A_pos pos, A_ty type, A_dec funcdec, A_stmt compst);
 A_def A_LocalDef(A_pos pos, A_ty dec, A_decList declist);
 
 A_defList A_DefList(A_def head, A_defList tail);

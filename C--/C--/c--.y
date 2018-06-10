@@ -28,7 +28,6 @@ void yyerror(char *s) {
     A_dec dec;
     A_ty ty;
 
-    A_funcDec funcDec;
     A_expList expList;
     A_decList decList;
     A_def def;
@@ -63,8 +62,7 @@ LP RP LB RB LC RC IF ELSE WHILE FOR BREAK CONTINUE STRUCT RETURN VOID TYPEDEF
 %type <var> Var
 %type <exp> Exp
 %type <expList> Args
-%type <dec> Dec
-%type <funcDec> Funcdec
+%type <dec> Dec Funcdec
 %type <decList> Declist ExtDeclist
 %type <ty> Stru Specifier
 %type <def> Def ExtDef
@@ -88,9 +86,9 @@ ExtDef:  Specifier ExtDeclist SEMICOLON {$$=A_GlobalDef(EM_tokPos, $1, $2);print
         |Specifier Funcdec Compst       {$$=A_FuncDef(EM_tokPos, $1, $2, $3);printf("--funcdec\n");}
         ;
 
-ExtDeclist:      Var                    {$$=A_DecList(A_Dec(EM_tokPos, $1, NULL), NULL);printf("--extdeclistvar\n");}
-                |Var ASSIGN Exp         {$$=A_DecList(A_Dec(EM_tokPos, $1, $3), NULL);printf("--extdeclistvarass\n");}
-                |Var COMMA ExtDeclist   {$$=A_DecList(A_Dec(EM_tokPos, $1, NULL), $3);printf("--extdeclist\n");}
+ExtDeclist:      Var                    {$$=A_DecList(A_SimpleDec(EM_tokPos, $1, NULL), NULL);printf("--extdeclistvar\n");}
+                |Var ASSIGN Exp         {$$=A_DecList(A_SimpleDec(EM_tokPos, $1, $3), NULL);printf("--extdeclistvarass\n");}
+                |Var COMMA ExtDeclist   {$$=A_DecList(A_SimpleDec(EM_tokPos, $1, NULL), $3);printf("--extdeclist\n");}
                 ;
 
 // specifiers
@@ -157,8 +155,8 @@ Declist:         Dec                    {$$=A_DecList($1, NULL);printf("--dec\n"
                 |Dec COMMA Declist      {$$=A_DecList($1, $3);printf("--declist\n");}
                 ;
 
-Dec:     Var                 {$$=A_Dec(EM_tokPos, $1, NULL);printf("--vardec\n");}
-        |Var ASSIGN Exp      {$$=A_Dec(EM_tokPos, $1, $3);printf("--var=x\n");}
+Dec:     Var                 {$$=A_SimpleDec(EM_tokPos, $1, NULL);printf("--vardec\n");}
+        |Var ASSIGN Exp      {$$=A_SimpleDec(EM_tokPos, $1, $3);printf("--var=x\n");}
 
 Id:      ID      {$$=S_Symbol($1);}
         ;
