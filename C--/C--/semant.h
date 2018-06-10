@@ -1,16 +1,24 @@
-//
-// semantic.h
-// C--
-//
-
+/*Author: Jing Yao*/
 #ifndef SEMANT_H
 #define SEMANT_H
-
-struct defty {
-    Tr_def def;
+typedef struct varty_ *varty; // variable
+typedef struct functy_ *functy;
+typedef struct expty_ *expty;
+struct expty_
+{
+    A_exp exp;
     Ty_ty ty;
 };
+struct varty_
+{
+    A_ty t;
+    A_var v;
+};
+struct functy_
+{
+    A_ty t;
+    A_dec f;
+};
 
-F_fragList SEM_transProg(A_def def);
-
+static void startCheck(A_defList v);
 #endif

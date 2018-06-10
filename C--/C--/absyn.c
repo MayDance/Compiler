@@ -80,6 +80,15 @@ A_exp A_OpExp(A_pos pos, A_oper oper, A_exp left, A_exp right) {
     p->u.opp.right=right;
     return p;
 }
+A_exp A_RelExp(A_pos pos, A_rel rel, A_exp left, A_exp right) {
+    A_exp p = checked_malloc(sizeof(*p));
+    p->kind=A_relExp;
+    p->pos=pos;
+    p->u.rell.rel=rel;
+    p->u.rell.left=left;
+    p->u.rell.right=right;
+    return p;
+}
 A_exp A_AssignExp(A_pos pos, A_exp left, A_exp right) {
     A_exp p = checked_malloc(sizeof(*p));
     p->kind=A_assignExp;

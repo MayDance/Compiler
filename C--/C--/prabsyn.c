@@ -30,10 +30,14 @@ static void indent(FILE *out, int d) {
 }
 
 static char str_oper[][12] = {"AND", "OR", "PLUS", "MINUS", "TIMES", "DIVIDE"};
+static char str_rel[][12] = {"BIGGER", "SMALLER", "BEQUAL", "SEQUAL", "NEQUAL", "EEQUAL"};
 static char str_ty[][12] = {"int", "float", "char"};
 
 static void pr_oper(FILE *out, A_oper d) {
     fprintf(out, "%s", str_oper[d]);
+}
+static void pr_rel(FILE *out, A_rel d) {
+    fprintf(out, "%s", str_rel[d]);
 }
 static void pr_type(FILE *out, A_type t) {
     fprintf(out, "%s", str_ty[t]);
@@ -46,7 +50,7 @@ static void pr_var(FILE *out, A_var v, int d) {
             break;
         case A_arrayVar:
             fprintf(out, "arrayVar(\n");
-            pr_var(out, v->u.arrayy.simple, d+1); fprintf(out, "\n");
+            indent(out, d + 1); pr_var(out, v->u.arrayy.simple, d+1); fprintf(out, "\n");
             indent(out, d + 1); fprintf(out, "size(%d)\n", v->u.arrayy.size);
             indent(out, d); fprintf(out, ")");
             break;
@@ -84,6 +88,13 @@ static void pr_exp(FILE *out, A_exp v, int d) {
             indent(out, d+1); pr_exp(out, v->u.opp.right, d+1);fprintf(out, "\n");
             indent(out, d);fprintf(out, ")");
             break;
+        case A_relExp:
+            fprintf(out, "relExp(\n");
+            indent(out, d+1); pr_rel(out, v->u.rell.rel); fprintf(out, "\n");
+            indent(out, d+1); pr_exp(out, v->u.rell.left, d+1); fprintf(out, "\n");
+            indent(out, d+1); pr_exp(out, v->u.rell.right, d+1);fprintf(out, "\n");
+            indent(out, d);fprintf(out, ")");
+            break;
         case A_assignExp:
             indent(out, d);
             fprintf(out, "assignExp(\n");
@@ -95,6 +106,12 @@ static void pr_exp(FILE *out, A_exp v, int d) {
             indent(out, d);
             fprintf(out, "notExp("); pr_exp(out, v->u.nott.exp, d+1); fprintf(out, "%s", ")");
             break;
+        case A_arrayExp:
+            fprintf(out, "arrayExp(\n");
+            indent(out, d+1); pr_exp(out, v->u.arrayy.exp1, d+1); fprintf(out, "\n");
+            indent(out, d+1); pr_exp(out, v->u.arrayy.exp2, d+1); fprintf(out, "\n");
+            indent(out, d); fprintf(out, ")");
+            break;
         default:
             assert(0);
     }
@@ -104,12 +121,12 @@ static void pr_dec(FILE *out, A_dec v, int d) {
     indent(out, d);
     switch (v->kind) {
         case A_simpleDec:
-            fprintf(out, "simpleDec(");
-            pr_var(out, v->u.simpp.var, d+1);
+            fprintf(out, "simpleDec(\n");
+            indent(out, d+1); pr_var(out, v->u.simpp.var, d+1);fprintf(out, "\n");
             if (v->u.simpp.init != NULL) {
                 fprintf(out, " = "); pr_exp(out, v->u.simpp.init, d+1);
             }
-            fprintf(out, ")");
+            indent(out, d); fprintf(out, ")");
             break;
         case A_funcDec:
             fprintf(out, "funcDec(\n");
@@ -220,7 +237,7 @@ static void pr_stmt(FILE *out, A_stmt v, int d) {
             break;
         case A_ifStmt:
             fprintf(out, "ifStmt(\n");
-            pr_exp(out, v->u.iff.condition, d+1); fprintf(out, ",\n");
+            indent(out, d+1); pr_exp(out, v->u.iff.condition, d+1); fprintf(out, ",\n");
             pr_stmt(out, v->u.iff.iff, d+1); fprintf(out, ",\n");
             if (v->u.iff.elsee) {
                 pr_stmt(out, v->u.iff.elsee, d+1); fprintf(out, "\n");
@@ -229,7 +246,7 @@ static void pr_stmt(FILE *out, A_stmt v, int d) {
             break;
         case A_whileStmt:
             fprintf(out, "whileStmt(\n");
-            pr_exp(out, v->u.whilee.condition, d+1); fprintf(out, ",\n");
+            indent(out, d+1); pr_exp(out, v->u.whilee.condition, d+1); fprintf(out, ",\n");
             pr_stmt(out, v->u.whilee.stmt, d+1); fprintf(out, "\n");
             indent(out, d); fprintf(out, ")");
             break;

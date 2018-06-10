@@ -34,6 +34,7 @@ int main(int argc, char **argv) {
             return 1;
         }
         pr_defList(out, absyn_root, 0); // print absyn data structure
+//        startCheck(absyn_root);
         //fragList = SEM_transProg(absyn_root);
         fprintf(out, "\n++++++++++++Semantic Analysis Successed!++++++++++++\n");
     }

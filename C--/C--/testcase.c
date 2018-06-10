@@ -1,4 +1,8 @@
 int i;
+float k, j;
 int main() {
-    return 0;
+    i = 9;
+    while (1) {
+        i = 0;
+    }
 }

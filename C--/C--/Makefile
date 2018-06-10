@@ -4,7 +4,7 @@ test: errormsg.o lex.yy.o y.tab.o util.o absyn.o parse.o prabsyn.o symbol.o tabl
 errormsg.o: errormsg.c errormsg.h util.h
 	cc -g -c errormsg.c
 
-lex.yy.o: lex.yy.c errormsg.h absyn.h y.tab.h
+lex.yy.o: lex.yy.c errormsg.h absyn.h y.tab.h tokens.h
 	cc -g -c lex.yy.c
 
 y.tab.c: c--.y

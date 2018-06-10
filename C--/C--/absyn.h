@@ -34,6 +34,7 @@ typedef struct A_paramDec_ *A_paramDec;
 typedef struct A_paramList_ *A_paramList;
 
 typedef enum {A_andOP, A_orOP, A_plusOp, A_minusOp, A_timesOp, A_divideOp} A_oper;
+typedef enum {A_b, A_s, A_be, A_se, A_ne, A_ee} A_rel;
 typedef enum {A_INT, A_FLOAT, A_CHAR} A_type;
 
 //variable
@@ -51,7 +52,7 @@ struct A_var_ {
 
 // expression
 struct A_exp_ {
-    enum {A_funcExp, A_struExp, A_simpleExp, A_intExp, A_floatExp, A_charExp, A_opExp, A_assignExp, A_notExp, A_arrayExp} kind;
+    enum {A_funcExp, A_struExp, A_simpleExp, A_intExp, A_floatExp, A_charExp, A_opExp, A_relExp, A_assignExp, A_notExp, A_arrayExp} kind;
     A_pos pos;
     union {
         struct {
@@ -72,6 +73,10 @@ struct A_exp_ {
             A_oper oper;
             A_exp left, right;
         } opp;
+        struct {
+            A_rel rel;
+            A_exp left, right;
+        } rell;
         struct {
             A_exp left, right;
         } assignn;
@@ -213,6 +218,7 @@ A_exp A_IntExp(A_pos pos, int i);
 A_exp A_FloatExp(A_pos pos, float f);
 A_exp A_CharExp(A_pos pos, char c);
 A_exp A_OpExp(A_pos pos, A_oper oper, A_exp left, A_exp right);
+A_exp A_RelExp(A_pos pos, A_rel rel, A_exp left, A_exp right);
 A_exp A_AssignExp(A_pos pos, A_exp left, A_exp right);
 A_exp A_NotExp(A_pos pos, A_exp exp);
 A_exp A_ArrayExp(A_pos pos, A_exp exp1, A_exp exp2);
