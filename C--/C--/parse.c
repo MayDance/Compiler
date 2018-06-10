@@ -27,15 +27,15 @@ int main(int argc, char **argv) {
     FILE *out = stdout;
     
     if (argc==2) {
+        fprintf(out, "\n++++++++++++Lexical and Semantic Analysis Begin!++++++++++++\n");
         absyn_root = parse(argv[1]);
         if (!absyn_root) {
-            fprintf(out, "testcase is empty!\n");
+            fprintf(out, "\n++++++++++++Semantic Analysis Failed!++++++++++++\n");
             return 1;
         }
         pr_defList(out, absyn_root, 0); // print absyn data structure
         //fragList = SEM_transProg(absyn_root);
-
-        fprintf(out, "\n");
+        fprintf(out, "\n++++++++++++Semantic Analysis Successed!++++++++++++\n");
     }
     return 0;
 }

@@ -45,7 +45,6 @@ static int streq(string a, string b) {
 }
 
 S_symbol S_Symbol(string name) {
-    printf("!!!!!!!!!!!!!%s!!!!!!!!!!!!!\n", name);
     int index= hash(name) % SIZE;
     S_symbol syms = hashtable[index], sym;
     for(sym=syms; sym; sym=sym->next)

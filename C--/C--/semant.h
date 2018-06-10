@@ -1,7 +1,16 @@
-/*Author: Zihan Zhao*/
+//
+// semantic.h
+// C--
+//
+
 #ifndef SEMANT_H
 #define SEMANT_H
-struct expty {Tr_exp exp; Ty_ty ty;};
 
-F_fragList SEM_transProg(A_exp exp);
+struct defty {
+    Tr_def def;
+    Ty_ty ty;
+};
+
+F_fragList SEM_transProg(A_def def);
+
 #endif

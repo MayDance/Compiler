@@ -1,7 +1,4 @@
-
-int a;
-int f (int i) {
-    return 0;
-}
+int i;
 int main() {
+    return 0;
 }
