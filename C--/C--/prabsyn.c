@@ -30,7 +30,7 @@ static void indent(FILE *out, int d) {
 }
 
 static char str_oper[][12] = {"AND", "OR", "PLUS", "MINUS", "TIMES", "DIVIDE"};
-static char str_rel[][12] = {"BIGGER", "SMALLER", "BEQUAL", "SEQUAL", "NEQUAL", "EEQUAL"};
+static char str_rel[][12] = {"BIGGER", "SMALLER", "BEQUAL", "SEQUAL", "EEQUAL", "NEQUAL"};
 static char str_ty[][12] = {"int", "float", "char"};
 
 static void pr_oper(FILE *out, A_oper d) {

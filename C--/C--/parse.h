@@ -15,7 +15,7 @@
 #include "absyn.h"
 #include "errormsg.h"
 #include "prabsyn.h"
-//#include "semant.h"
+#include "semant.h"
 
 extern int yyparse(void);
 extern A_defList absyn_root;

@@ -9,7 +9,6 @@ extern int yylex(void); // function prototype
 A_defList absyn_root;
 
 void yyerror(char *s) {
-    printf("?????\n");
     EM_error(EM_tokPos, "%s", s);
 }
 
@@ -43,13 +42,14 @@ void yyerror(char *s) {
 %token <ival> INT
 %token <fval> FLOAT
 %token <cval> CHAR
-%token 
-COMMA SEMICOLON PLUS MINUS TIMES DIVIDE ASSIGN NOT REL AND OR DOT T_INT T_FLOAT T_CHAR
-LP RP LB RB LC RC IF ELSE WHILE FOR BREAK CONTINUE STRUCT RETURN VOID TYPEDEF
+%token COMMA SEMICOLON PLUS MINUS TIMES DIVIDE ASSIGN NOT AND OR DOT
+%token BT ST BE SE EE NE
+%token T_INT T_FLOAT T_CHAR
+%token LP RP LB RB LC RC 
+%token IF ELSE WHILE FOR BREAK CONTINUE STRUCT RETURN VOID TYPEDEF
 %right ASSIGN
-%left OR 
-%left AND
-%left REL
+%left OR AND
+%left BT ST BE SE EE NE
 %left PLUS MINUS 
 %left TIMES DIVIDE
 %right NOT
@@ -165,7 +165,12 @@ Id:      ID      {$$=S_Symbol($1);}
 Exp:     Exp ASSIGN Exp {$$=A_AssignExp(EM_tokPos, $1, $3);}
         |Exp AND Exp    {$$=A_OpExp(EM_tokPos, A_andOP, $1, $3);}
         |Exp OR Exp     {$$=A_OpExp(EM_tokPos, A_orOP, $1, $3);}
-        |Exp REL Exp    {$$=A_RelExp(EM_tokPos, REL, $1, $3);}
+        |Exp BT Exp     {$$=A_RelExp(EM_tokPos, A_btRel, $1, $3);}
+        |Exp ST Exp     {$$=A_RelExp(EM_tokPos, A_stRel, $1, $3);}
+        |Exp BE Exp     {$$=A_RelExp(EM_tokPos, A_beRel, $1, $3);}
+        |Exp SE Exp     {$$=A_RelExp(EM_tokPos, A_seRel, $1, $3);}
+        |Exp EE Exp     {$$=A_RelExp(EM_tokPos, A_eeRel, $1, $3);}
+        |Exp NE Exp     {$$=A_RelExp(EM_tokPos, A_neRel, $1, $3);}
         |Exp PLUS Exp   {$$=A_OpExp(EM_tokPos, A_plusOp, $1, $3);}
         |Exp MINUS Exp  {$$=A_OpExp(EM_tokPos, A_minusOp, $1, $3);}
         |Exp TIMES Exp  {$$=A_OpExp(EM_tokPos, A_timesOp, $1, $3);}
@@ -181,6 +186,7 @@ Exp:     Exp ASSIGN Exp {$$=A_AssignExp(EM_tokPos, $1, $3);}
         |INT            {$$=A_IntExp(EM_tokPos, $1);}
         |FLOAT          {$$=A_FloatExp(EM_tokPos, $1);}
         |CHAR           {$$=A_IntExp(EM_tokPos, $1);}
+        ;
 
 Args:    Exp COMMA Args {$$=A_ExpList($1, $3);}
         |Exp            {$$=A_ExpList($1, NULL);}

@@ -45,7 +45,6 @@ integer (({digit_}{digit}*)|0)
 sfloat (({digit}+\.{digit}*)|({digit}*\.{digit}+))[Ee][+-]?{digit}+
 floatt {sfloat}|((({digit_}{digit}*)|0)\.{digit}+)
 id {letter_}({letter_}|{digit})*
-relop >|<|>=|<=|==|!=
 comments "/*"[^*]*[*]+([^*/][^*]*[*]+)*[*]*"/"
 
 %%
@@ -85,13 +84,18 @@ comments "/*"[^*]*[*]+([^*/][^*]*[*]+)*[*]*"/"
 
 "," {adjust(); return COMMA;}
 ";" {adjust(); return SEMICOLON;}
+">" {adjust(); printf("dayu\n"); return BT;}
+"<" {adjust(); return ST;}
+">="    {adjust(); return BE;}
+"<="    {adjust(); return SE;}
+"=="    {adjust(); return EE;}
+"!="    {adjust(); return NE;}
 "+" {adjust(); return PLUS;}
 "-" {adjust(); return MINUS;}
 "*" {adjust(); return TIMES;}
 "/" {adjust(); return DIVIDE;}
 "=" {adjust(); return ASSIGN;}
 "!" {adjust(); return NOT;}
-{relop}   {adjust(); return REL;}
 "&&"    {adjust(); return AND;}
 "||"    {adjust(); return OR;}
 "." {adjust(); return DOT;}

@@ -34,7 +34,7 @@ typedef struct A_paramDec_ *A_paramDec;
 typedef struct A_paramList_ *A_paramList;
 
 typedef enum {A_andOP, A_orOP, A_plusOp, A_minusOp, A_timesOp, A_divideOp} A_oper;
-typedef enum {A_b, A_s, A_be, A_se, A_ne, A_ee} A_rel;
+typedef enum {A_btRel, A_stRel, A_beRel, A_seRel, A_eeRel, A_neRel} A_rel;
 typedef enum {A_INT, A_FLOAT, A_CHAR} A_type;
 
 //variable

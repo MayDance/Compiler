@@ -1,24 +1,31 @@
 /*Author: Jing Yao*/
 #ifndef SEMANT_H
 #define SEMANT_H
-typedef struct varty_ *varty; // variable
-typedef struct functy_ *functy;
-typedef struct expty_ *expty;
-struct expty_
+#include <string.h>
+typedef struct varEnv_ *varEnv; // variable
+typedef struct funcEnv_ *funcEnv;
+typedef struct tyEnv_ *tyEnv;
+struct tyEnv_
 {
-    A_exp exp;
-    Ty_ty ty;
+    string tyname;
+    int tyid;
+    varEnv head;
+    tyEnv next;
 };
-struct varty_
+struct varEnv_
 {
-    A_ty t;
-    A_var v;
+    string varname;
+    int vartype;
+    int size;
+    varEnv next;
 };
-struct functy_
+struct funcEnv_
 {
-    A_ty t;
-    A_dec f;
+    string funcname;
+    int functype;
+    varEnv head;
+    funcEnv next;
 };
 
-static void startCheck(A_defList v);
+void startCheck(A_defList v);
 #endif
